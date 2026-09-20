@@ -1,0 +1,261 @@
+{% extends "base_gestor.html" %}
+
+
+{% block title %}
+Dashboard - AdminHaus
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- =========================================
+     ENCABEZADO
+     ========================================= -->
+
+<header class="mb-4">
+
+    <h1 class="ah-text-grande mb-0">
+        Dashboard
+    </h1>
+
+    <p class="ah-text-subtitulos ah-text-secondary mb-0">
+        Resumen general de la gestión de propiedades
+    </p>
+
+</header>
+
+
+
+<!-- =========================================
+     TARJETAS DE RESUMEN
+     ========================================= -->
+
+<div class="row g-4 mb-4">
+
+
+    <!-- PROPIEDADES -->
+
+    <div class="col-12 col-md-6 col-xl-3">
+
+        <div class="ah-card h-100 p-3 px-xl-4">
+
+            <p class="ah-text-regular fw-medium ah-text-secondary mb-2">
+                Propiedades
+            </p>
+
+            <p class="ah-text-grande mb-1">
+                48
+            </p>
+
+            <p class="ah-text-peque fw-medium ah-text-success mb-0">
+                Total registradas
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ALQUILADAS -->
+
+    <div class="col-12 col-md-6 col-xl-3">
+
+        <div class="ah-card h-100 p-3 px-xl-4">
+
+            <p class="ah-text-regular fw-medium ah-text-secondary mb-2">
+                Alquiladas
+            </p>
+
+            <p class="ah-text-grande mb-1">
+                36
+            </p>
+
+            <p class="ah-text-peque fw-medium ah-text-success mb-0">
+                75% del total
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- PAGOS PENDIENTES -->
+
+    <div class="col-12 col-md-6 col-xl-3">
+
+        <div class="ah-card h-100 p-3 px-xl-4">
+
+            <p class="ah-text-regular fw-medium ah-text-secondary mb-2">
+                Pagos pendientes
+            </p>
+
+            <p class="ah-text-grande mb-1">
+                7
+            </p>
+
+            <p class="ah-text-peque fw-medium ah-text-success mb-0">
+                Requieren seguimiento
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- MANTENIMIENTOS -->
+
+    <div class="col-12 col-md-6 col-xl-3">
+
+        <div class="ah-card h-100 p-3 px-xl-4">
+
+            <p class="ah-text-regular fw-medium ah-text-secondary mb-2">
+                Mantenimientos
+            </p>
+
+            <p class="ah-text-grande mb-1">
+                5
+            </p>
+
+            <p class="ah-text-peque fw-medium ah-text-success mb-0">
+                Solicitudes abiertas
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================
+     ACTIVIDAD RECIENTE
+     ========================================= -->
+
+<section class="ah-card p-4">
+
+    <h2 class="ah-text-titulos-2 mb-4">
+        Actividad reciente
+    </h2>
+
+
+
+    <!-- ACTIVIDAD 1 -->
+
+    <div class="row align-items-center mb-4">
+
+        <div class="col-12 col-md">
+
+            <p class="ah-text-regular-negrita mb-1">
+                Pago registrado
+            </p>
+
+            <p class="ah-text-regular ah-text-secondary mb-0">
+                Contrato #C-018 · Casa P-018
+            </p>
+
+        </div>
+
+        <div class="col-12 col-md-auto mt-1 mt-md-0" style="min-width: 155px;">
+
+            <span class="ah-text-peque fw-medium ah-text-success">
+                Hace 10 min
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ACTIVIDAD 2 -->
+
+    <div class="row align-items-center mb-4">
+
+        <div class="col-12 col-md">
+
+            <p class="ah-text-regular-negrita mb-1">
+                Mantenimiento actualizado
+            </p>
+
+            <p class="ah-text-regular ah-text-secondary mb-0">
+                Propiedad P-024 · Reparación de fuga
+            </p>
+
+        </div>
+
+        <div class="col-12 col-md-auto mt-1 mt-md-0" style="min-width: 155px;">
+
+            <span class="ah-text-peque fw-medium ah-text-success">
+                Hace 1 hora
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ACTIVIDAD 3 -->
+
+    <div class="row align-items-center mb-4">
+
+        <div class="col-12 col-md">
+
+            <p class="ah-text-regular-negrita mb-1">
+                Nuevo propietario
+            </p>
+
+            <p class="ah-text-regular ah-text-secondary mb-0">
+                Ana López · 1 propiedad asociada
+            </p>
+
+        </div>
+
+        <div class="col-12 col-md-auto mt-1 mt-md-0" style="min-width: 155px;">
+
+            <span class="ah-text-peque fw-medium ah-text-success">
+                Hace 3 horas
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ACTIVIDAD 4 -->
+
+    <div class="row align-items-center">
+
+        <div class="col-12 col-md">
+
+            <p class="ah-text-regular-negrita mb-1">
+                Contrato renovado
+            </p>
+
+            <p class="ah-text-regular ah-text-secondary mb-0">
+                Contrato #C-012 · Apartamento P-007
+            </p>
+
+        </div>
+
+        <div class="col-12 col-md-auto mt-1 mt-md-0" style="min-width: 155px;">
+
+            <span class="ah-text-peque fw-medium ah-text-success">
+                Ayer
+            </span>
+
+        </div>
+
+    </div>
+
+
+</section>
+
+
+{% endblock %}

@@ -12,6 +12,10 @@ def login():
 def dashboard():
     return render_template("dashboard_admin.html")
 
+@app.route("/dashboard_gestor")
+def dashboard_gestor():
+    return render_template("dashboard_gestor.html")
+
 
 @app.route("/propietarios")
 def propietarios():
