@@ -9,9 +9,12 @@ def login():
 
 
 @app.route("/dashboard_admin")
-def dashboard():
+def dashboard_admin():
     return render_template("dashboard_admin.html")
 
+@app.route("/dashboard_propietario")
+def dashboard_propietario():
+    return render_template("dashboard_propietario.html")
 
 @app.route("/propietarios")
 def propietarios():
