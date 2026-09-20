@@ -59,6 +59,14 @@ def tecnicos():
 def usuarios():
     return render_template("usuarios.html")
 
+@app.route("/propietarios/nuevo", methods=["GET", "POST"])
+def nuevo_propietario():
+    return render_template("nuevo_propietario.html")
+
+@app.route("/inquilinos/nuevo", methods=["GET", "POST"])
+def nuevo_inquilino():
+    return render_template("nuevo_inquilino.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
