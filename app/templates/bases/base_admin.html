@@ -1,0 +1,288 @@
+{% extends "bases/base.html" %}
+
+
+{% block title %}
+AdminHaus - Panel administrativo
+{% endblock %}
+
+
+{% block sidebar %}
+
+<aside class="col-12 col-lg-2 ah-bg-primary">
+
+    <div class="h-100 d-flex flex-column p-3">
+
+
+        <!-- LOGO -->
+
+        <div class="d-flex justify-content-center mb-4">
+
+            <img
+                src="{{ url_for('static', filename='media/logo_oscuro-Photoroom.png') }}"
+                alt="AdminHaus"
+                class="img-fluid w-75"
+            >
+
+        </div>
+
+
+        <!-- DESCRIPCIÓN -->
+
+        <p class="ah-text-subtitulos ah-text-white mb-4">
+            Panel administrativo
+        </p>
+
+
+        <!-- MENÚ PRINCIPAL -->
+
+        <nav aria-label="Menú administrativo">
+
+            <ul class="list-unstyled mb-0">
+
+
+                <!-- DASHBOARD -->
+
+                <li class="mb-2">
+
+                    <a
+                        href="{{ url_for('dashboard_admin') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'dashboard_admin' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                        {% if request.endpoint == 'dashboard_admin' %}
+                            aria-current="page"
+                        {% endif %}
+                    >
+                        Dashboard
+                    </a>
+
+                </li>
+
+
+                <!-- PROPIETARIOS -->
+
+                <li class="mb-2">
+
+                    <a
+                        href="{{ url_for('propietarios') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'propietarios' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                    >
+                        Propietarios
+                    </a>
+
+                </li>
+
+
+                <!-- INQUILINOS -->
+
+                <li class="mb-2">
+
+                    <a
+                        href="{{ url_for('inquilinos') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'inquilinos' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                    >
+                        Inquilinos
+                    </a>
+
+                </li>
+
+
+                <!-- PROPIEDADES -->
+
+                <li class="mb-2">
+
+                    <a
+                        href="{{ url_for('propiedades') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'propiedades' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                    >
+                        Propiedades
+                    </a>
+
+                </li>
+
+
+                <!-- CONTRATOS -->
+
+                <li class="mb-2">
+
+                    <a
+                        href="{{ url_for('contratos') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'contratos' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                    >
+                        Contratos
+                    </a>
+
+                </li>
+
+
+                <!-- PAGOS -->
+
+                <li class="mb-2">
+
+                    <a
+                        href="{{ url_for('pagos') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'pagos' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                    >
+                        Pagos
+                    </a>
+
+                </li>
+
+
+                <!-- MANTENIMIENTOS -->
+
+                <li class="mb-2">
+
+                    <a
+                        href="{{ url_for('mantenimientos') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'mantenimientos' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                    >
+                        Mantenimientos
+                    </a>
+
+                </li>
+
+
+                <!-- PROVEEDORES -->
+
+                <li class="mb-2">
+
+                    <a
+                        href="{{ url_for('proveedores') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'proveedores' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                    >
+                        Proveedores
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </nav>
+
+
+        <!-- SEPARADOR -->
+
+        <hr class="ah-divider mt-4 mb-4">
+
+
+        <!-- USUARIOS -->
+
+        <div>
+
+            <span class="ah-text-peque ah-text-secondary">
+                USUARIOS
+            </span>
+
+
+            <ul class="list-unstyled mt-3 mb-0">
+
+                <li>
+
+                    <a
+                        href="{{ url_for('usuarios') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'usuarios' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                    >
+                        Usuarios
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </div>
+
+
+    </div>
+
+</aside>
+
+{% endblock %}

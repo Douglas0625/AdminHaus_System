@@ -1,0 +1,181 @@
+{% extends "bases/base.html" %}
+
+
+{% block title %}
+AdminHaus - Panel del propietario
+{% endblock %}
+
+
+{% block sidebar %}
+
+<aside class="col-12 col-lg-2 ah-bg-primary">
+
+    <div class="h-100 d-flex flex-column p-3">
+
+
+        <!-- LOGO -->
+
+        <div class="d-flex justify-content-center mb-4">
+
+            <img
+                src="{{ url_for('static', filename='media/logo_oscuro-Photoroom.png') }}"
+                alt="AdminHaus"
+                class="img-fluid w-75"
+            >
+
+        </div>
+
+
+        <!-- DESCRIPCIÓN -->
+
+        <p class="ah-text-subtitulos ah-text-secondary mb-4">
+            Panel del propietario
+        </p>
+
+
+        <!-- ROL -->
+
+        <p class="ah-text-peque ah-text-secondary text-uppercase mb-2">
+            Propietario
+        </p>
+
+
+        <!-- MENÚ -->
+
+        <nav aria-label="Menú del propietario">
+
+            <ul class="list-unstyled mb-0">
+
+
+                <!-- DASHBOARD -->
+
+                <li class="mb-2">
+
+                    <a
+                        href="{{ url_for('dashboard_propietario') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'dashboard_propietario' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                        {% if request.endpoint == 'dashboard_propietario' %}
+                            aria-current="page"
+                        {% endif %}
+                    >
+                        Dashboard
+                    </a>
+
+                </li>
+
+
+                <!-- MIS PROPIEDADES -->
+
+                <li class="mb-2">
+
+                    <a
+                        href="{{ url_for('propiedades') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'propiedades' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                    >
+                        Mis propiedades
+                    </a>
+
+                </li>
+
+
+                <!-- CONTRATOS -->
+
+                <li class="mb-2">
+
+                    <a
+                        href="{{ url_for('contratos') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'contratos' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                    >
+                        Contratos
+                    </a>
+
+                </li>
+
+
+                <!-- PAGOS -->
+
+                <li class="mb-2">
+
+                    <a
+                        href="{{ url_for('pagos') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'pagos' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                    >
+                        Pagos
+                    </a>
+
+                </li>
+
+
+                <!-- MANTENIMIENTOS -->
+
+                <li class="mb-2">
+
+                    <a
+                        href="{{ url_for('mantenimientos') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'mantenimientos' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                    >
+                        Mantenimientos
+                    </a>
+
+                </li>
+
+
+            </ul>
+
+        </nav>
+
+    </div>
+
+</aside>
+
+{% endblock %}
