@@ -136,16 +136,21 @@
 
                         <!-- FORMULARIO -->
 
+                        {% if error %}
+                            <div class="alert alert-danger mb-3" role="alert">
+                                {{ error }}
+                            </div>
+                        {% endif %}
+
                         <form
                             method="POST"
-                            action="{{ url_for('login') }}"
+                            action="{{ url_for('auth.login') }}"
                         >
 
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                             <!-- USUARIO -->
-
                             <div class="mb-3">
-
                                 <label
                                     for="usuario"
                                     class="ah-form-label"
@@ -161,15 +166,10 @@
                                     placeholder="Ingresa tu usuario"
                                     autocomplete="username"
                                 >
-
                             </div>
 
-
-
                             <!-- CONTRASEÑA -->
-
                             <div class="mb-3">
-
                                 <label
                                     for="contrasena"
                                     class="ah-form-label"
@@ -185,35 +185,24 @@
                                     placeholder="Ingresa tu contraseña"
                                     autocomplete="current-password"
                                 >
-
                             </div>
 
-
-
                             <!-- BOTÓN -->
-
                             <div class="d-grid mb-3">
-
                                 <button
                                     type="submit"
                                     class="ah-btn-primary"
                                 >
                                     Iniciar sesión
                                 </button>
-
                             </div>
 
-
-
                             <!-- PERMISOS -->
-
                             <p class="ah-text-regular ah-text-secondary mb-4">
                                 Acceso según tu rol y permisos
                             </p>
 
-
                         </form>
-
 
 
                         <!-- PIE -->

@@ -45,7 +45,7 @@ AdminHaus - Panel administrativo
                 <li class="mb-2">
 
                     <a
-                        href="{{ url_for('dashboard_admin') }}"
+                        href="{{ url_for('dashboard.dashboard_admin') }}"
                         class="
                             d-block
                             ah-text-white
@@ -53,11 +53,11 @@ AdminHaus - Panel administrativo
                             rounded
                             px-3
                             py-2
-                            {% if request.endpoint == 'dashboard_admin' %}
+                            {% if request.endpoint == 'dashboard.dashboard_admin' %}
                                 ah-bg-primary-hover
                             {% endif %}
                         "
-                        {% if request.endpoint == 'dashboard_admin' %}
+                        {% if request.endpoint == 'dashboard.dashboard_admin' %}
                             aria-current="page"
                         {% endif %}
                     >
@@ -72,7 +72,7 @@ AdminHaus - Panel administrativo
                 <li class="mb-2">
 
                     <a
-                        href="{{ url_for('propietarios') }}"
+                        href="#"
                         class="
                             d-block
                             ah-text-white
@@ -96,7 +96,7 @@ AdminHaus - Panel administrativo
                 <li class="mb-2">
 
                     <a
-                        href="{{ url_for('inquilinos') }}"
+                        href="#"
                         class="
                             d-block
                             ah-text-white
@@ -120,7 +120,7 @@ AdminHaus - Panel administrativo
                 <li class="mb-2">
 
                     <a
-                        href="{{ url_for('propiedades') }}"
+                        href="#"
                         class="
                             d-block
                             ah-text-white
@@ -144,7 +144,7 @@ AdminHaus - Panel administrativo
                 <li class="mb-2">
 
                     <a
-                        href="{{ url_for('contratos') }}"
+                        href="#"
                         class="
                             d-block
                             ah-text-white
@@ -168,7 +168,7 @@ AdminHaus - Panel administrativo
                 <li class="mb-2">
 
                     <a
-                        href="{{ url_for('pagos') }}"
+                        href="#"
                         class="
                             d-block
                             ah-text-white
@@ -192,7 +192,7 @@ AdminHaus - Panel administrativo
                 <li class="mb-2">
 
                     <a
-                        href="{{ url_for('mantenimientos') }}"
+                        href="#"
                         class="
                             d-block
                             ah-text-white
@@ -216,7 +216,7 @@ AdminHaus - Panel administrativo
                 <li class="mb-2">
 
                     <a
-                        href="{{ url_for('proveedores') }}"
+                        href="#"
                         class="
                             d-block
                             ah-text-white
@@ -245,20 +245,15 @@ AdminHaus - Panel administrativo
 
 
         <!-- USUARIOS -->
-
         <div>
-
             <span class="ah-text-peque ah-text-secondary">
                 USUARIOS
             </span>
 
-
             <ul class="list-unstyled mt-3 mb-0">
-
                 <li>
-
                     <a
-                        href="{{ url_for('usuarios') }}"
+                        href="#"
                         class="
                             d-block
                             ah-text-white
@@ -266,18 +261,30 @@ AdminHaus - Panel administrativo
                             rounded
                             px-3
                             py-2
-                            {% if request.endpoint == 'usuarios' %}
-                                ah-bg-primary-hover
-                            {% endif %}
                         "
                     >
                         Usuarios
                     </a>
-
                 </li>
-
             </ul>
+        </div>
 
+        <!-- CERRAR SESIÓN -->
+
+        <div class="mt-auto pt-4">
+            <a
+                href="{{ url_for('auth.logout') }}"
+                class="
+                    d-block
+                    ah-text-white
+                    ah-text-regular-negrita
+                    rounded
+                    px-3
+                    py-2
+                "
+            >
+                Cerrar sesión
+            </a>
         </div>
 
 
