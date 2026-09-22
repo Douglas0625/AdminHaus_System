@@ -400,6 +400,11 @@ a:hover {
     background-color: rgba(49, 130, 206, 0.10);
 }
 
+.ah-status-soft {
+    
+    background-color: #F5F7FA;
+}
+
 
 /* =========================================
    12. TABLAS

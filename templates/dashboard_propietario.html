@@ -1,0 +1,400 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard - AdminHaus
+{% endblock %}
+
+{% block content %}
+
+<!-- =========================================
+     ENCABEZADO
+     ========================================= -->
+<header class="mb-4">
+    <h1 class="ah-text-grande mb-0">
+        Dashboard
+    </h1>
+
+    <p class="ah-text-subtitulos ah-text-secondary mb-0">
+        Resumen de tus propiedades
+    </p>
+</header>
+
+
+<!-- =========================================
+     TARJETAS DE RESUMEN
+     ========================================= -->
+<div class="row g-4 mb-4">
+
+    <!-- MIS PROPIEDADES -->
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="ah-card h-100 p-3">
+
+            <p class="ah-text-regular-negrita ah-text-secondary mb-2">
+                Mis propiedades
+            </p>
+
+            <p class="ah-text-grande mb-1">
+                3
+            </p>
+
+            <p class="ah-text-regular ah-text-success mb-0">
+                Total registradas
+            </p>
+
+        </div>
+    </div>
+
+
+    <!-- ALQUILADAS -->
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="ah-card h-100 p-3">
+
+            <p class="ah-text-regular-negrita ah-text-secondary mb-2">
+                Alquiladas
+            </p>
+
+            <p class="ah-text-grande mb-1">
+                2
+            </p>
+
+            <p class="ah-text-regular ah-text-success mb-0">
+                Actualmente alquiladas
+            </p>
+
+        </div>
+    </div>
+
+
+    <!-- PAGOS PENDIENTES -->
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="ah-card h-100 p-3">
+
+            <p class="ah-text-regular-negrita ah-text-secondary mb-2">
+                Pagos pendientes
+            </p>
+
+            <p class="ah-text-grande mb-1">
+                1
+            </p>
+
+            <p class="ah-text-regular ah-text-warning mb-0">
+                Requieren seguimiento
+            </p>
+
+        </div>
+    </div>
+
+
+    <!-- MANTENIMIENTOS -->
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="ah-card h-100 p-3">
+
+            <p class="ah-text-regular-negrita ah-text-secondary mb-2">
+                Mantenimientos
+            </p>
+
+            <p class="ah-text-grande mb-1">
+                2
+            </p>
+
+            <p class="ah-text-regular ah-text-success mb-0">
+                Solicitudes abiertas
+            </p>
+
+        </div>
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     MIS PROPIEDADES
+     ========================================= -->
+<section class="ah-card p-4 mb-4">
+
+    <h2 class="ah-text-titulos-2 mb-4">
+        Mis propiedades
+    </h2>
+
+
+    <!-- PROPIEDAD 1 -->
+    <div class="border rounded p-3 mb-3">
+
+        <div class="row align-items-center g-3">
+
+            <div class="col-auto">
+                <img
+                    src="{{ url_for('static', filename='/media/logo_oscuro-Photoroom.png') }}"
+                    alt="Casa P-001"
+                    width="52"
+                    height="38"
+                    class="rounded object-fit-cover"
+                >
+            </div>
+
+            <div class="col">
+
+                <p class="ah-text-regular-negrita mb-1">
+                    Casa P-001
+                </p>
+
+                <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                    Casa · San Salvador
+                </p>
+
+            </div>
+
+            <div class="col-auto text-end">
+
+                <span class="ah-status ah-status-success me-3">
+                    Alquilada
+                </span>
+
+                <span class="ah-text-regular-negrita">
+                    $650.00
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PROPIEDAD 2 -->
+    <div class="border rounded p-3 mb-3">
+
+        <div class="row align-items-center g-3">
+
+            <div class="col-auto">
+                <img
+                    src="{{ url_for('static', filename='images/property-002.jpg') }}"
+                    alt="Apartamento P-002"
+                    width="52"
+                    height="38"
+                    class="rounded object-fit-cover"
+                >
+            </div>
+
+            <div class="col">
+
+                <p class="ah-text-regular-negrita mb-1">
+                    Apartamento P-002
+                </p>
+
+                <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                    Apartamento · Santa Tecla
+                </p>
+
+            </div>
+
+            <div class="col-auto text-end">
+
+                <span class="ah-status ah-status-success me-3">
+                    Disponible
+                </span>
+
+                <span class="ah-text-regular-negrita">
+                    $550.00
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PROPIEDAD 3 -->
+    <div class="border rounded p-3">
+
+        <div class="row align-items-center g-3">
+
+            <div class="col-auto">
+                <img
+                    src="{{ url_for('static', filename='images/property-003.jpg') }}"
+                    alt="Casa P-003"
+                    width="52"
+                    height="38"
+                    class="rounded object-fit-cover"
+                >
+            </div>
+
+            <div class="col">
+
+                <p class="ah-text-regular-negrita mb-1">
+                    Casa P-003
+                </p>
+
+                <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                    Casa · Antiguo Cuscatlán
+                </p>
+
+            </div>
+
+            <div class="col-auto text-end">
+
+                <span class="ah-status ah-status-success me-3">
+                    Alquilada
+                </span>
+
+                <span class="ah-text-regular-negrita">
+                    $580.00
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================
+     PRÓXIMOS PAGOS + MANTENIMIENTOS
+     ========================================= -->
+<div class="row g-4">
+
+    <!-- PRÓXIMOS PAGOS -->
+    <div class="col-12 col-lg-6">
+
+        <section class="ah-card h-100 p-4">
+
+            <h2 class="ah-text-titulos-2 mb-4">
+                Próximos pagos
+            </h2>
+
+
+            <!-- PAGO 1 -->
+            <div class="border rounded p-3 mb-3">
+
+                <div class="row align-items-center">
+
+                    <div class="col">
+
+                        <p class="ah-text-regular-negrita mb-1">
+                            Casa P-001
+                        </p>
+
+                        <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                            15 de mayo · $650.00
+                        </p>
+
+                    </div>
+
+                    <div class="col-auto">
+                        <span class="ah-status ah-status-warning">
+                            Pendiente
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PAGO 2 -->
+            <div class="border rounded p-3">
+
+                <div class="row align-items-center">
+
+                    <div class="col">
+
+                        <p class="ah-text-regular-negrita mb-1">
+                            Casa P-003
+                        </p>
+
+                        <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                            20 de mayo · $580.00
+                        </p>
+
+                    </div>
+
+                    <div class="col-auto">
+                        <span class="ah-status ah-status-success">
+                            Programado
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <!-- MANTENIMIENTOS RECIENTES -->
+    <div class="col-12 col-lg-6">
+
+        <section class="ah-card h-100 p-4">
+
+            <h2 class="ah-text-titulos-2 mb-4">
+                Mantenimientos recientes
+            </h2>
+
+
+            <!-- MANTENIMIENTO 1 -->
+            <div class="border rounded p-3 mb-3">
+
+                <div class="row align-items-center">
+
+                    <div class="col">
+
+                        <p class="ah-text-regular-negrita mb-1">
+                            Casa P-001
+                        </p>
+
+                        <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                            Reparación de fuga · 12 de mayo
+                        </p>
+
+                    </div>
+
+                    <div class="col-auto">
+                        <span class="ah-status ah-status-info">
+                            En curso
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- MANTENIMIENTO 2 -->
+            <div class="border rounded p-3">
+
+                <div class="row align-items-center">
+
+                    <div class="col">
+
+                        <p class="ah-text-regular-negrita mb-1">
+                            Apartamento P-002
+                        </p>
+
+                        <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                            Limpieza de aire acondicionado · 10 de mayo
+                        </p>
+
+                    </div>
+
+                    <div class="col-auto">
+                        <span class="ah-status ah-status-success">
+                            Completado
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+
+{% endblock %}

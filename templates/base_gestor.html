@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+
+{#
+    =========================================
+    BASE DEL ROL GESTOR
+    Reutiliza el layout de base.html y solo
+    reemplaza el menú lateral.
+
+    Para agregar una opción al menú, añade
+    una línea a la lista "menu_gestor":
+    (nombre_de_la_ruta_en_app.py, "Texto")
+    =========================================
+#}
+
+{% set menu_gestor = [
+    ('dashboard_gestor', 'Dashboard'),
+    ('propietarios',     'Propietarios'),
+    ('inquilinos',       'Inquilinos'),
+    ('propiedades',      'Propiedades'),
+    ('contratos',        'Contratos'),
+    ('pagos',            'Pagos'),
+    ('mantenimientos',   'Mantenimientos'),
+    ('proveedores',      'Proveedores'),
+] %}
+
+
+{% block sidebar %}
+
+<aside class="col-12 col-lg-2 ah-bg-primary">
+
+    <div class="h-100 d-flex flex-column p-3">
+
+
+        <!-- LOGO -->
+
+        <div class="d-flex justify-content-center pt-3 mb-1">
+
+            <img
+                src="{{ url_for('static', filename='media/logo_oscuro-Photoroom.png') }}"
+                alt="AdminHaus"
+                class="img-fluid"
+                style="width: 190px;"
+            >
+
+        </div>
+
+
+        <!-- DESCRIPCIÓN -->
+
+        <p class="ah-text-peque ah-text-secondary px-3 mb-4 pb-2">
+            Panel administrativo
+        </p>
+
+
+        <!-- ETIQUETA DEL ROL -->
+
+        <p class="ah-text-peque ah-text-secondary text-uppercase mb-2">
+            Gestor
+        </p>
+
+
+        <!-- =================================
+             MENÚ PRINCIPAL
+             ================================= -->
+
+        <nav aria-label="Menú del gestor">
+
+            <ul class="list-unstyled mb-0">
+
+                {% for endpoint, texto in menu_gestor %}
+
+                <li class="mb-2">
+
+                    <a
+                        href="{{ url_for(endpoint) }}"
+                        class="ah-sidebar-link {% if request.endpoint == endpoint %}active{% endif %}"
+                        {% if request.endpoint == endpoint %}aria-current="page"{% endif %}
+                    >
+                        {{ texto }}
+                    </a>
+
+                </li>
+
+                {% endfor %}
+
+            </ul>
+
+        </nav>
+
+    </div>
+
+</aside>
+
+{% endblock %}

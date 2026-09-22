@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Nuevo propietario - AdminHaus
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- =========================================
+     ENCABEZADO
+     ========================================= -->
+
+<header class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+
+    <div>
+
+        <h1 class="ah-text-grande mb-0">
+            Nuevo propietario
+        </h1>
+
+        <p class="ah-text-subtitulos ah-text-secondary mb-0">
+            Registra la información del propietario.
+        </p>
+
+    </div>
+
+
+    <div class="d-flex gap-2">
+
+        <a
+            href="{{ url_for('propietarios') }}"
+            class="ah-btn-secondary d-inline-block"
+        >
+            Cancelar
+        </a>
+
+        <!-- El botón está fuera del formulario, por eso usa form="..." -->
+
+        <button
+            type="submit"
+            form="form-propietario"
+            class="ah-btn-primary"
+        >
+            Guardar propietario
+        </button>
+
+    </div>
+
+</header>
+
+
+
+<!-- =========================================
+     FORMULARIO
+     ========================================= -->
+
+<form
+    id="form-propietario"
+    method="POST"
+    action="{{ url_for('nuevo_propietario') }}"
+    class="ah-card overflow-hidden"
+>
+
+
+    <!-- =====================================
+         INFORMACIÓN PERSONAL
+         ===================================== -->
+
+    <section class="ah-form-section p-4">
+
+        <h2 class="ah-form-section-title">
+            Información personal
+        </h2>
+
+        <div class="row g-4">
+
+            <!-- NOMBRE -->
+
+            <div class="col-12 col-md-6">
+
+                <label for="nombre" class="ah-form-label">
+                    Nombre *
+                </label>
+
+                <input
+                    type="text"
+                    id="nombre"
+                    name="nombre"
+                    class="ah-form-control"
+                    placeholder="Ej. Juan"
+                    autocomplete="given-name"
+                    required
+                >
+
+            </div>
+
+
+            <!-- APELLIDO -->
+
+            <div class="col-12 col-md-6">
+
+                <label for="apellido" class="ah-form-label">
+                    Apellido *
+                </label>
+
+                <input
+                    type="text"
+                    id="apellido"
+                    name="apellido"
+                    class="ah-form-control"
+                    placeholder="Ej. Pérez"
+                    autocomplete="family-name"
+                    required
+                >
+
+            </div>
+
+
+            <!-- DUI -->
+
+            <div class="col-12 col-md-6">
+
+                <label for="dui" class="ah-form-label">
+                    DUI *
+                </label>
+
+                <input
+                    type="text"
+                    id="dui"
+                    name="dui"
+                    class="ah-form-control"
+                    placeholder="Ej. 01234567-8"
+                    inputmode="numeric"
+                    maxlength="10"
+                    pattern="[0-9]{8}-[0-9]"
+                    title="Formato del DUI: 8 dígitos, guion y 1 dígito (01234567-8)"
+                    required
+                >
+
+            </div>
+
+
+            <!-- TELÉFONO -->
+
+            <div class="col-12 col-md-6">
+
+                <label for="telefono" class="ah-form-label">
+                    Teléfono
+                </label>
+
+                <input
+                    type="tel"
+                    id="telefono"
+                    name="telefono"
+                    class="ah-form-control"
+                    placeholder="Ej. 7000-1234"
+                    autocomplete="tel"
+                >
+
+            </div>
+
+
+            <!-- CORREO -->
+
+            <div class="col-12">
+
+                <label for="correo" class="ah-form-label">
+                    Correo electrónico
+                </label>
+
+                <input
+                    type="email"
+                    id="correo"
+                    name="correo"
+                    class="ah-form-control"
+                    placeholder="Ej. juan@email.com"
+                    autocomplete="email"
+                >
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================
+         CUENTA DE USUARIO
+         ===================================== -->
+
+    <section class="ah-form-section p-4">
+
+        <h2 class="ah-form-section-title">
+            Cuenta de usuario
+        </h2>
+
+
+        <!-- AVISO -->
+
+        <div class="ah-info-box mb-4">
+
+            <p class="ah-text-regular-negrita mb-2">
+                Cuenta de acceso
+            </p>
+
+            <p class="ah-text-regular ah-text-secondary mb-0">
+                El propietario puede tener una cuenta para consultar la información de sus propiedades.
+            </p>
+
+        </div>
+
+
+        <!-- ¿CREAR CUENTA? -->
+
+        <div class="mb-4">
+
+            <span id="etiqueta-crear-cuenta" class="ah-form-label">
+                Crear cuenta de usuario
+            </span>
+
+            <div
+                class="ah-toggle"
+                role="radiogroup"
+                aria-labelledby="etiqueta-crear-cuenta"
+            >
+
+                <input
+                    type="radio"
+                    id="crear-cuenta-si"
+                    name="crear_cuenta"
+                    value="si"
+                    checked
+                >
+                <label for="crear-cuenta-si">Sí</label>
+
+                <input
+                    type="radio"
+                    id="crear-cuenta-no"
+                    name="crear_cuenta"
+                    value="no"
+                >
+                <label for="crear-cuenta-no">No</label>
+
+            </div>
+
+        </div>
+
+
+        <!-- USUARIO Y CONTRASEÑA
+             (se ocultan cuando se elige "No") -->
+
+        <div id="campos-cuenta" class="row g-4">
+
+            <div class="col-12 col-md-6">
+
+                <label for="usuario" class="ah-form-label">
+                    Nombre de usuario
+                </label>
+
+                <input
+                    type="text"
+                    id="usuario"
+                    name="usuario"
+                    class="ah-form-control"
+                    placeholder="Ej. juan.perez"
+                    autocomplete="off"
+                    required
+                >
+
+            </div>
+
+
+            <div class="col-12 col-md-6">
+
+                <label for="contrasena" class="ah-form-label">
+                    Contraseña
+                </label>
+
+                <input
+                    type="password"
+                    id="contrasena"
+                    name="contrasena"
+                    class="ah-form-control"
+                    placeholder="Ej. ••••••••"
+                    autocomplete="new-password"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================
+         PROPIEDADES
+         ===================================== -->
+
+    <section class="ah-form-section p-4">
+
+        <h2 class="ah-form-section-title">
+            Propiedades
+        </h2>
+
+        <div class="ah-bg-background card my-4 border-0 p-3" >
+
+
+            <p class="ah-text-regular ah-text-secondary mb-0">
+                Las propiedades se podrán asociar posteriormente desde el módulo de Propiedades.
+            </p>
+
+        </div>
+
+    </section>
+
+</form>
+
+
+<script>
+    // Muestra u oculta usuario y contraseña según la opción elegida.
+    // Al ocultarlos también se desactivan, para que no se validen ni se envíen.
+    (function () {
+        const opciones = document.querySelectorAll('input[name="crear_cuenta"]');
+        const campos = document.getElementById('campos-cuenta');
+        const inputs = campos.querySelectorAll('input');
+
+        function actualizar() {
+            const crear = document.querySelector('input[name="crear_cuenta"]:checked').value === 'si';
+
+            campos.classList.toggle('d-none', !crear);
+
+            inputs.forEach(function (input) {
+                input.disabled = !crear;
+                input.required = crear;
+            });
+        }
+
+        opciones.forEach(function (opcion) {
+            opcion.addEventListener('change', actualizar);
+        });
+
+        actualizar();
+    })();
+</script>
+
+
+{% endblock %}

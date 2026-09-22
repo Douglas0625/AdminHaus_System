@@ -1,0 +1,444 @@
+{% extends "base.html" %}
+
+{% block title %}
+Propietarios - AdminHaus
+{% endblock %}
+
+{% block content %}
+
+<!-- =========================================
+     ENCABEZADO
+     ========================================= -->
+<header class="mb-4">
+
+    <div class="d-flex justify-content-between align-items-start">
+
+        <div>
+            <h1 class="ah-text-grande mb-1">
+                Propietarios
+            </h1>
+
+            <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                Gestiona la información de los propietarios y sus propiedades.
+            </p>
+        </div>
+
+        <a href="{{ url_for('dashboard_admin') }}"
+           class="btn ah-btn-primary">
+            + Nuevo propietario
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================
+     BÚSQUEDA Y FILTROS
+     ========================================= -->
+<div class="row g-3 mb-3">
+
+    <!-- BUSCADOR -->
+    <div class="col-12 col-md-9">
+
+        <form method="GET"
+              action="{{ url_for('dashboard_admin') }}">
+
+            <div class="input-group">
+
+                <span class="input-group-text">
+                    <i class="bi bi-search"></i>
+                </span>
+
+                <input
+                    type="text"
+                    name="buscar"
+                    class="form-control"
+                    placeholder="Buscar por nombre, DUI o correo..."
+                    value="{{ request.args.get('buscar', '') }}"
+                >
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- FILTRO ESTADO -->
+    <div class="col-12 col-md-3">
+
+        <select
+            name="estado"
+            class="form-select"
+            onchange="this.form.submit()"
+        >
+
+            <option value="todos">
+                Todos
+            </option>
+
+            <option value="activo"
+                {% if request.args.get('estado') == 'activo' %}
+                    selected
+                {% endif %}
+            >
+                Activo
+            </option>
+
+            <option value="inactivo"
+                {% if request.args.get('estado') == 'inactivo' %}
+                    selected
+                {% endif %}
+            >
+                Inactivo
+            </option>
+
+        </select>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     TABLA DE PROPIETARIOS
+     ========================================= -->
+<section class="ah-card p-0 overflow-hidden">
+
+    <div class="table-responsive">
+
+        <table class="table ah-table mb-0 align-middle">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Propietario
+                    </th>
+
+                    <th>
+                        DUI
+                    </th>
+
+                    <th>
+                        Teléfono
+                    </th>
+
+                    <th>
+                        Correo
+                    </th>
+
+                    <th>
+                        Propiedades
+                    </th>
+
+                    <th>
+                        Estado
+                    </th>
+
+                    <th class="text-center">
+                        Acciones
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for propietario in propietarios %}
+
+                <tr>
+
+                    <!-- PROPIETARIO -->
+                    <td>
+
+                        <span class="ah-text-regular-negrita">
+                            {{ propietario.nombre }}
+                            {{ propietario.apellido }}
+                        </span>
+
+                    </td>
+
+
+                    <!-- DUI -->
+                    <td>
+                        {{ propietario.dui }}
+                    </td>
+
+
+                    <!-- TELÉFONO -->
+                    <td>
+                        {{ propietario.telefono or '-' }}
+                    </td>
+
+
+                    <!-- CORREO -->
+                    <td>
+                        {{ propietario.correo or '-' }}
+                    </td>
+
+
+                    <!-- PROPIEDADES -->
+                    <td>
+
+                        <span class="ah-text-regular-negrita">
+                            {{ propietario.propiedades|length }}
+                        </span>
+
+                    </td>
+
+
+                    <!-- ESTADO -->
+                    <td>
+
+                        {% if propietario.activo %}
+
+                            <span class="ah-status ah-status-success">
+                                ACTIVO
+                            </span>
+
+                        {% else %}
+
+                            <span class="ah-status">
+                                INACTIVO
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- ACCIONES -->
+                    <td class="text-center">
+
+                        <div class="d-flex justify-content-center gap-2">
+
+                            <!-- VER -->
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-light"
+                                title="Ver propietario"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalPropietario{{ propietario.id }}"
+                            >
+                                <i class="bi bi-eye"></i>
+                            </button>
+
+
+                            <!-- EDITAR -->
+                            <a
+                                href="{{ url_for(
+                                    'dashboard_admin',
+                                    propietario_id=propietario.id
+                                ) }}"
+                                class="btn btn-sm btn-light"
+                                title="Editar propietario"
+                            >
+                                <i class="bi bi-pencil"></i>
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+
+                <!-- =========================================
+                     MODAL DETALLE DEL PROPIETARIO
+                     ========================================= -->
+                <div
+                    class="modal fade"
+                    id="modalPropietario{{ propietario.id }}"
+                    tabindex="-1"
+                    aria-hidden="true"
+                >
+
+                    <div class="modal-dialog modal-dialog-centered">
+
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+
+                                <h5 class="modal-title">
+                                    Información del propietario
+                                </h5>
+
+                                <button
+                                    type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Cerrar"
+                                ></button>
+
+                            </div>
+
+
+                            <div class="modal-body">
+
+                                <div class="mb-3">
+
+                                    <p class="ah-text-regular-negrita mb-1">
+                                        Nombre completo
+                                    </p>
+
+                                    <p class="ah-text-regular mb-0">
+                                        {{ propietario.nombre }}
+                                        {{ propietario.apellido }}
+                                    </p>
+
+                                </div>
+
+
+                                <div class="row">
+
+                                    <div class="col-md-6 mb-3">
+
+                                        <p class="ah-text-regular-negrita mb-1">
+                                            DUI
+                                        </p>
+
+                                        <p class="ah-text-regular mb-0">
+                                            {{ propietario.dui }}
+                                        </p>
+
+                                    </div>
+
+
+                                    <div class="col-md-6 mb-3">
+
+                                        <p class="ah-text-regular-negrita mb-1">
+                                            Teléfono
+                                        </p>
+
+                                        <p class="ah-text-regular mb-0">
+                                            {{ propietario.telefono or '-' }}
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="mb-3">
+
+                                    <p class="ah-text-regular-negrita mb-1">
+                                        Correo electrónico
+                                    </p>
+
+                                    <p class="ah-text-regular mb-0">
+                                        {{ propietario.correo or '-' }}
+                                    </p>
+
+                                </div>
+
+
+                                <hr>
+
+
+                                <div>
+
+                                    <p class="ah-text-regular-negrita mb-2">
+                                        Propiedades asociadas
+                                    </p>
+
+                                    {% if propietario.propiedades %}
+
+                                        <ul class="list-group">
+
+                                            {% for propiedad in propietario.propiedades %}
+
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                                                    <span>
+                                                        {{ propiedad.codigo }}
+                                                    </span>
+
+                                                    <span class="ah-text-secondary">
+                                                        {{ propiedad.tipo }}
+                                                    </span>
+
+                                                </li>
+
+                                            {% endfor %}
+
+                                        </ul>
+
+                                    {% else %}
+
+                                        <p class="ah-text-secondary mb-0">
+                                            No tiene propiedades asociadas.
+                                        </p>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="modal-footer">
+
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary"
+                                    data-bs-dismiss="modal"
+                                >
+                                    Cerrar
+                                </button>
+
+                                <a
+                                    href="{{ url_for(
+                                        'propietarios.editar',
+                                        propietario_id=propietario.id
+                                    ) }}"
+                                    class="btn btn-primary"
+                                >
+                                    Editar propietario
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% else %}
+
+                <!-- SIN REGISTROS -->
+                <tr>
+
+                    <td
+                        colspan="7"
+                        class="text-center py-5"
+                    >
+
+                        <p class="ah-text-regular-negrita mb-1">
+                            No hay propietarios registrados
+                        </p>
+
+                        <p class="ah-text-secondary mb-0">
+                            Agrega un nuevo propietario para comenzar.
+                        </p>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+{% endblock %}
