@@ -288,6 +288,7 @@ a:hover {
 
 .ah-btn-primary:hover {
     background-color: var(--primary-hover);
+    color: var(--surface);
     border-color: var(--primary-hover);
 }
 
