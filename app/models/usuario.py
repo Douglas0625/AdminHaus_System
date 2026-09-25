@@ -31,3 +31,10 @@ class Usuario(db.Model):
         nullable=False,
         default=True
     )
+
+    __table_args__ = (
+        db.CheckConstraint(
+            "rol IN ('ADMINISTRADOR', 'GESTOR', 'PROPIETARIO')",
+            name="chk_usuario_rol"
+        ),
+    )
