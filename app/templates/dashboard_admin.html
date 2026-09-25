@@ -45,7 +45,7 @@ Dashboard - AdminHaus
             </p>
 
             <p class="ah-text-grande mb-1">
-                48
+                {{ total_propiedades }}
             </p>
 
             <p class="ah-text-regular ah-text-success mb-0">
@@ -69,11 +69,11 @@ Dashboard - AdminHaus
             </p>
 
             <p class="ah-text-grande mb-1">
-                36
+                {{ propiedades_alquiladas }}
             </p>
 
             <p class="ah-text-regular ah-text-success mb-0">
-                75% del total de propiedades
+                {{ porcentaje_alquiladas }}% del total de propiedades
             </p>
 
         </div>
@@ -93,7 +93,7 @@ Dashboard - AdminHaus
             </p>
 
             <p class="ah-text-grande mb-1">
-                7
+                {{ pagos_pendientes }}
             </p>
 
             <p class="ah-text-regular ah-text-warning mb-0">
@@ -117,7 +117,7 @@ Dashboard - AdminHaus
             </p>
 
             <p class="ah-text-grande mb-1">
-                5
+                {{ mantenimientos_abiertos }}
             </p>
 
             <p class="ah-text-regular ah-text-warning mb-0">
@@ -138,123 +138,112 @@ Dashboard - AdminHaus
 
 <section class="ah-card p-4">
 
-
     <h2 class="ah-text-titulos-2 mb-4">
-        Actividad reciente
+        Pagos recientes
     </h2>
 
+    {% if pagos_recientes %}
 
+        {% for pago in pagos_recientes %}
 
-    <!-- ACTIVIDAD 1 -->
+        <div class="row align-items-center mb-4">
 
-    <div class="row align-items-center mb-4">
+            <div class="col">
 
-        <div class="col">
+                <p class="ah-text-regular-negrita mb-1">
+                    Pago registrado
+                </p>
 
-            <p class="ah-text-regular-negrita mb-1">
-                Pago registrado
-            </p>
+                <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                    Contrato #{{ pago.contrato_id }}
+                    · {{ pago.propiedad_codigo }}
+                </p>
 
-            <p class="ah-text-subtitulos ah-text-secondary mb-0">
-                Contrato #C-018 · Casa P-018
-            </p>
+            </div>
 
-        </div>
+            <div class="col-auto text-end">
 
-        <div class="col-auto">
+                <p class="ah-text-regular-negrita mb-1">
+                    ${{ "%.2f"|format(pago.monto) }}
+                </p>
 
-            <span class="ah-text-regular ah-text-success">
-                Hace 10 min
-            </span>
+                <span class="ah-text-peque ah-text-secondary">
+                    {{ pago.fecha_pago.strftime('%d/%m/%Y') }}
+                </span>
 
-        </div>
-
-    </div>
-
-
-
-    <!-- ACTIVIDAD 2 -->
-
-    <div class="row align-items-center mb-4">
-
-        <div class="col">
-
-            <p class="ah-text-regular-negrita mb-1">
-                Mantenimiento actualizado
-            </p>
-
-            <p class="ah-text-subtitulos ah-text-secondary mb-0">
-                Propiedad P-024 · Reparación de fuga
-            </p>
+            </div>
 
         </div>
 
-        <div class="col-auto">
+        {% endfor %}
 
-            <span class="ah-text-regular ah-text-success">
-                Hace 1 hora
-            </span>
+    {% else %}
 
-        </div>
+        <p class="ah-text-secondary mb-0">
+            No hay pagos registrados.
+        </p>
 
-    </div>
+    {% endif %}
 
+</section>
 
+<section class="ah-card p-4">
 
-    <!-- ACTIVIDAD 3 -->
+    <h2 class="ah-text-titulos-2 mb-4">
+        Mantenimientos recientes
+    </h2>
 
-    <div class="row align-items-center mb-4">
+    {% if mantenimientos_recientes %}
 
-        <div class="col">
+        {% for mantenimiento in mantenimientos_recientes %}
 
-            <p class="ah-text-regular-negrita mb-1">
-                Nuevo propietario
-            </p>
+        <div class="row align-items-center mb-4">
 
-            <p class="ah-text-subtitulos ah-text-secondary mb-0">
-                Ana López · 1 propiedad asociada
-            </p>
+            <div class="col">
 
-        </div>
+                <p class="ah-text-regular-negrita mb-1">
+                    {{ mantenimiento.propiedad_codigo }}
+                </p>
 
-        <div class="col-auto">
+                <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                    {{ mantenimiento.descripcion }}
+                </p>
 
-            <span class="ah-text-regular ah-text-success">
-                Hace 3 horas
-            </span>
+                <p class="ah-text-peque ah-text-secondary mb-0">
+                    {{ mantenimiento.fecha_solicitud.strftime('%d/%m/%Y') }}
+                </p>
 
-        </div>
+            </div>
 
-    </div>
+            <div class="col-auto">
 
+                <span class="ah-status
+                    {% if mantenimiento.estado == 'RESUELTO' %}
+                        ah-status-success
+                    {% elif mantenimiento.estado == 'CANCELADO' %}
+                        ah-status-danger
+                    {% elif mantenimiento.estado == 'EN PROCESO' %}
+                        ah-status-info
+                    {% else %}
+                        ah-status-warning
+                    {% endif %}
+                ">
+                    {{ mantenimiento.estado }}
+                </span>
 
-
-    <!-- ACTIVIDAD 4 -->
-
-    <div class="row align-items-center">
-
-        <div class="col">
-
-            <p class="ah-text-regular-negrita mb-1">
-                Contrato renovado
-            </p>
-
-            <p class="ah-text-subtitulos ah-text-secondary mb-0">
-                Contrato #C-012 · Apartamento P-007
-            </p>
-
-        </div>
-
-        <div class="col-auto">
-
-            <span class="ah-text-regular ah-text-success">
-                Ayer
-            </span>
+            </div>
 
         </div>
 
-    </div>
+        {% endfor %}
 
+    {% else %}
+
+        <p class="ah-text-secondary mb-0">
+            No hay mantenimientos registrados.
+        </p>
+
+    {% endif %}
 
 </section>
 

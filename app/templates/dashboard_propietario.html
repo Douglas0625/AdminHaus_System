@@ -1,15 +1,19 @@
 {% extends "bases/base_propietario.html" %}
 
+
 {% block title %}
 Dashboard - AdminHaus
 {% endblock %}
+
 
 {% block content %}
 
 <!-- =========================================
      ENCABEZADO
      ========================================= -->
+
 <header class="mb-4">
+
     <h1 class="ah-text-grande mb-0">
         Dashboard
     </h1>
@@ -17,16 +21,21 @@ Dashboard - AdminHaus
     <p class="ah-text-subtitulos ah-text-secondary mb-0">
         Resumen de tus propiedades
     </p>
+
 </header>
 
 
 <!-- =========================================
      TARJETAS DE RESUMEN
      ========================================= -->
+
 <div class="row g-4 mb-4">
 
+
     <!-- MIS PROPIEDADES -->
+
     <div class="col-12 col-md-6 col-xl-3">
+
         <div class="ah-card h-100 p-3">
 
             <p class="ah-text-regular-negrita ah-text-secondary mb-2">
@@ -34,7 +43,7 @@ Dashboard - AdminHaus
             </p>
 
             <p class="ah-text-grande mb-1">
-                3
+                {{ total_propiedades }}
             </p>
 
             <p class="ah-text-regular ah-text-success mb-0">
@@ -42,11 +51,14 @@ Dashboard - AdminHaus
             </p>
 
         </div>
+
     </div>
 
 
     <!-- ALQUILADAS -->
+
     <div class="col-12 col-md-6 col-xl-3">
+
         <div class="ah-card h-100 p-3">
 
             <p class="ah-text-regular-negrita ah-text-secondary mb-2">
@@ -54,7 +66,7 @@ Dashboard - AdminHaus
             </p>
 
             <p class="ah-text-grande mb-1">
-                2
+                {{ propiedades_alquiladas }}
             </p>
 
             <p class="ah-text-regular ah-text-success mb-0">
@@ -62,11 +74,14 @@ Dashboard - AdminHaus
             </p>
 
         </div>
+
     </div>
 
 
     <!-- PAGOS PENDIENTES -->
+
     <div class="col-12 col-md-6 col-xl-3">
+
         <div class="ah-card h-100 p-3">
 
             <p class="ah-text-regular-negrita ah-text-secondary mb-2">
@@ -74,7 +89,7 @@ Dashboard - AdminHaus
             </p>
 
             <p class="ah-text-grande mb-1">
-                1
+                {{ pagos_pendientes }}
             </p>
 
             <p class="ah-text-regular ah-text-warning mb-0">
@@ -82,11 +97,14 @@ Dashboard - AdminHaus
             </p>
 
         </div>
+
     </div>
 
 
     <!-- MANTENIMIENTOS -->
+
     <div class="col-12 col-md-6 col-xl-3">
+
         <div class="ah-card h-100 p-3">
 
             <p class="ah-text-regular-negrita ah-text-secondary mb-2">
@@ -94,14 +112,15 @@ Dashboard - AdminHaus
             </p>
 
             <p class="ah-text-grande mb-1">
-                2
+                {{ mantenimientos_abiertos }}
             </p>
 
-            <p class="ah-text-regular ah-text-success mb-0">
+            <p class="ah-text-regular ah-text-warning mb-0">
                 Solicitudes abiertas
             </p>
 
         </div>
+
     </div>
 
 </div>
@@ -110,143 +129,138 @@ Dashboard - AdminHaus
 <!-- =========================================
      MIS PROPIEDADES
      ========================================= -->
+
 <section class="ah-card p-4 mb-4">
 
-    <h2 class="ah-text-titulos-2 mb-4">
-        Mis propiedades
-    </h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
+        <div>
 
-    <!-- PROPIEDAD 1 -->
-    <div class="border rounded p-3 mb-3">
+            <h2 class="ah-text-titulos-2 mb-1">
+                Mis propiedades
+            </h2>
 
-        <div class="row align-items-center g-3">
-
-            <div class="col-auto">
-                <img
-                    src="{{ url_for('static', filename='/media/logo_oscuro-Photoroom.png') }}"
-                    alt="Casa P-001"
-                    width="52"
-                    height="38"
-                    class="rounded object-fit-cover"
-                >
-            </div>
-
-            <div class="col">
-
-                <p class="ah-text-regular-negrita mb-1">
-                    Casa P-001
-                </p>
-
-                <p class="ah-text-subtitulos ah-text-secondary mb-0">
-                    Casa · San Salvador
-                </p>
-
-            </div>
-
-            <div class="col-auto text-end">
-
-                <span class="ah-status ah-status-success me-3">
-                    Alquilada
-                </span>
-
-                <span class="ah-text-regular-negrita">
-                    $650.00
-                </span>
-
-            </div>
+            <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                Propiedades asociadas a tu cuenta
+            </p>
 
         </div>
 
     </div>
 
 
-    <!-- PROPIEDAD 2 -->
-    <div class="border rounded p-3 mb-3">
+    {% if propiedades %}
 
-        <div class="row align-items-center g-3">
+        {% for propiedad in propiedades %}
 
-            <div class="col-auto">
-                <img
-                    src="{{ url_for('static', filename='images/property-002.jpg') }}"
-                    alt="Apartamento P-002"
-                    width="52"
-                    height="38"
-                    class="rounded object-fit-cover"
-                >
-            </div>
+        <div class="border rounded p-3 {% if not loop.last %}mb-3{% endif %}">
 
-            <div class="col">
+            <div class="row align-items-center g-3">
 
-                <p class="ah-text-regular-negrita mb-1">
-                    Apartamento P-002
-                </p>
 
-                <p class="ah-text-subtitulos ah-text-secondary mb-0">
-                    Apartamento · Santa Tecla
-                </p>
+                <!-- ICONO -->
 
-            </div>
+                <div class="col-auto">
 
-            <div class="col-auto text-end">
+                    <div
+                        class="d-flex align-items-center justify-content-center rounded"
+                        style="width: 52px; height: 52px; background-color: #F5F7FA;"
+                    >
 
-                <span class="ah-status ah-status-success me-3">
-                    Disponible
-                </span>
+                        {% if propiedad.tipo == 'CASA' %}
 
-                <span class="ah-text-regular-negrita">
-                    $550.00
-                </span>
+                            <i class="bi bi-house-door fs-4"></i>
+
+                        {% else %}
+
+                            <i class="bi bi-buildings fs-4"></i>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- INFORMACIÓN -->
+
+                <div class="col">
+
+                    <p class="ah-text-regular-negrita mb-1">
+                        {{ propiedad.codigo }}
+                    </p>
+
+                    <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                        {{ propiedad.tipo|capitalize }}
+                        ·
+                        {{ propiedad.municipio }}
+                    </p>
+
+                </div>
+
+
+                <!-- ESTADO Y PRECIO -->
+
+                <div class="col-12 col-md-auto text-md-end">
+
+
+                    {% if propiedad.estado == 'ALQUILADA' %}
+
+                        <span class="ah-status ah-status-success me-md-3">
+                            Alquilada
+                        </span>
+
+                    {% elif propiedad.estado == 'DISPONIBLE' %}
+
+                        <span class="ah-status ah-status-info me-md-3">
+                            Disponible
+                        </span>
+
+                    {% elif propiedad.estado == 'INACTIVA' %}
+
+                        <span class="ah-status ah-status-warning me-md-3">
+                            Inactiva
+                        </span>
+
+                    {% else %}
+
+                        <span class="ah-status ah-status-warning me-md-3">
+                            {{ propiedad.estado }}
+                        </span>
+
+                    {% endif %}
+
+
+                    <span class="ah-text-regular-negrita ms-2">
+                        ${{ "%.2f"|format(propiedad.precio_alquiler) }}
+                    </span>
+
+                </div>
 
             </div>
 
         </div>
 
-    </div>
+        {% endfor %}
 
 
-    <!-- PROPIEDAD 3 -->
-    <div class="border rounded p-3">
+    {% else %}
 
-        <div class="row align-items-center g-3">
+        <div class="text-center py-4">
 
-            <div class="col-auto">
-                <img
-                    src="{{ url_for('static', filename='images/property-003.jpg') }}"
-                    alt="Casa P-003"
-                    width="52"
-                    height="38"
-                    class="rounded object-fit-cover"
-                >
-            </div>
+            <i class="bi bi-house fs-1 ah-text-secondary"></i>
 
-            <div class="col">
+            <p class="ah-text-regular-negrita mt-3 mb-1">
+                No tienes propiedades registradas
+            </p>
 
-                <p class="ah-text-regular-negrita mb-1">
-                    Casa P-003
-                </p>
-
-                <p class="ah-text-subtitulos ah-text-secondary mb-0">
-                    Casa · Antiguo Cuscatlán
-                </p>
-
-            </div>
-
-            <div class="col-auto text-end">
-
-                <span class="ah-status ah-status-success me-3">
-                    Alquilada
-                </span>
-
-                <span class="ah-text-regular-negrita">
-                    $580.00
-                </span>
-
-            </div>
+            <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                Las propiedades asociadas a tu cuenta aparecerán aquí.
+            </p>
 
         </div>
 
-    </div>
+    {% endif %}
 
 </section>
 
@@ -254,147 +268,229 @@ Dashboard - AdminHaus
 <!-- =========================================
      PRÓXIMOS PAGOS + MANTENIMIENTOS
      ========================================= -->
+
 <div class="row g-4">
 
-    <!-- PRÓXIMOS PAGOS -->
+
+    <!-- =====================================
+         PRÓXIMOS PAGOS
+         ===================================== -->
+
     <div class="col-12 col-lg-6">
 
         <section class="ah-card h-100 p-4">
 
-            <h2 class="ah-text-titulos-2 mb-4">
+            <h2 class="ah-text-titulos-2 mb-1">
                 Próximos pagos
             </h2>
 
+            <p class="ah-text-subtitulos ah-text-secondary mb-4">
+                Pagos pendientes o vencidos
+            </p>
 
-            <!-- PAGO 1 -->
-            <div class="border rounded p-3 mb-3">
 
-                <div class="row align-items-center">
+            {% if pagos_proximos %}
 
-                    <div class="col">
+                {% for pago in pagos_proximos %}
 
-                        <p class="ah-text-regular-negrita mb-1">
-                            Casa P-001
-                        </p>
+                <div class="border rounded p-3 {% if not loop.last %}mb-3{% endif %}">
 
-                        <p class="ah-text-subtitulos ah-text-secondary mb-0">
-                            15 de mayo · $650.00
-                        </p>
+                    <div class="row align-items-center g-3">
 
-                    </div>
 
-                    <div class="col-auto">
-                        <span class="ah-status ah-status-warning">
-                            Pendiente
-                        </span>
+                        <div class="col">
+
+                            <p class="ah-text-regular-negrita mb-1">
+                                {{ pago.propiedad_codigo }}
+                            </p>
+
+                            <p class="ah-text-subtitulos ah-text-secondary mb-0">
+
+                                {% if pago.fecha_esperada %}
+                                    {{ pago.fecha_esperada.strftime('%d/%m/%Y') }}
+                                {% endif %}
+
+                                ·
+
+                                ${{ "%.2f"|format(pago.monto) }}
+
+                            </p>
+
+                        </div>
+
+
+                        <div class="col-auto">
+
+                            {% if pago.estado == 'PENDIENTE' %}
+
+                                <span class="ah-status ah-status-warning">
+                                    Pendiente
+                                </span>
+
+                            {% elif pago.estado == 'VENCIDO' %}
+
+                                <span class="ah-status ah-status-danger">
+                                    Vencido
+                                </span>
+
+                            {% else %}
+
+                                <span class="ah-status">
+                                    {{ pago.estado }}
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
                     </div>
 
                 </div>
 
-            </div>
+                {% endfor %}
 
 
-            <!-- PAGO 2 -->
-            <div class="border rounded p-3">
+            {% else %}
 
-                <div class="row align-items-center">
+                <div class="text-center py-4">
 
-                    <div class="col">
+                    <i class="bi bi-check-circle fs-1 ah-text-success"></i>
 
-                        <p class="ah-text-regular-negrita mb-1">
-                            Casa P-003
-                        </p>
+                    <p class="ah-text-regular-negrita mt-3 mb-1">
+                        No hay pagos pendientes
+                    </p>
 
-                        <p class="ah-text-subtitulos ah-text-secondary mb-0">
-                            20 de mayo · $580.00
-                        </p>
-
-                    </div>
-
-                    <div class="col-auto">
-                        <span class="ah-status ah-status-success">
-                            Programado
-                        </span>
-                    </div>
+                    <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                        No tienes pagos pendientes o vencidos.
+                    </p>
 
                 </div>
 
-            </div>
+            {% endif %}
 
         </section>
 
     </div>
 
 
-    <!-- MANTENIMIENTOS RECIENTES -->
+    <!-- =====================================
+         MANTENIMIENTOS
+         ===================================== -->
+
     <div class="col-12 col-lg-6">
 
         <section class="ah-card h-100 p-4">
 
-            <h2 class="ah-text-titulos-2 mb-4">
+            <h2 class="ah-text-titulos-2 mb-1">
                 Mantenimientos recientes
             </h2>
 
+            <p class="ah-text-subtitulos ah-text-secondary mb-4">
+                Últimas solicitudes registradas
+            </p>
 
-            <!-- MANTENIMIENTO 1 -->
-            <div class="border rounded p-3 mb-3">
 
-                <div class="row align-items-center">
+            {% if mantenimientos %}
 
-                    <div class="col">
+                {% for mantenimiento in mantenimientos %}
 
-                        <p class="ah-text-regular-negrita mb-1">
-                            Casa P-001
-                        </p>
+                <div class="border rounded p-3 {% if not loop.last %}mb-3{% endif %}">
 
-                        <p class="ah-text-subtitulos ah-text-secondary mb-0">
-                            Reparación de fuga · 12 de mayo
-                        </p>
+                    <div class="row align-items-center g-3">
 
-                    </div>
 
-                    <div class="col-auto">
-                        <span class="ah-status ah-status-info">
-                            En curso
-                        </span>
+                        <div class="col">
+
+                            <p class="ah-text-regular-negrita mb-1">
+                                {{ mantenimiento.propiedad_codigo }}
+                            </p>
+
+                            <p class="ah-text-subtitulos ah-text-secondary mb-1">
+                                {{ mantenimiento.descripcion }}
+                            </p>
+
+                            <p class="ah-text-peque ah-text-secondary mb-0">
+
+                                {% if mantenimiento.fecha_solicitud %}
+                                    {{ mantenimiento.fecha_solicitud.strftime('%d/%m/%Y') }}
+                                {% endif %}
+
+                            </p>
+
+                        </div>
+
+
+                        <div class="col-auto">
+
+
+                            {% if mantenimiento.estado == 'PENDIENTE' %}
+
+                                <span class="ah-status ah-status-warning">
+                                    Pendiente
+                                </span>
+
+
+                            {% elif mantenimiento.estado == 'EN PROCESO' %}
+
+                                <span class="ah-status ah-status-info">
+                                    En proceso
+                                </span>
+
+
+                            {% elif mantenimiento.estado == 'RESUELTO' %}
+
+                                <span class="ah-status ah-status-success">
+                                    Resuelto
+                                </span>
+
+
+                            {% elif mantenimiento.estado == 'CANCELADO' %}
+
+                                <span class="ah-status ah-status-danger">
+                                    Cancelado
+                                </span>
+
+
+                            {% else %}
+
+                                <span class="ah-status">
+                                    {{ mantenimiento.estado }}
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
                     </div>
 
                 </div>
 
-            </div>
+                {% endfor %}
 
 
-            <!-- MANTENIMIENTO 2 -->
-            <div class="border rounded p-3">
+            {% else %}
 
-                <div class="row align-items-center">
+                <div class="text-center py-4">
 
-                    <div class="col">
+                    <i class="bi bi-tools fs-1 ah-text-secondary"></i>
 
-                        <p class="ah-text-regular-negrita mb-1">
-                            Apartamento P-002
-                        </p>
+                    <p class="ah-text-regular-negrita mt-3 mb-1">
+                        No hay mantenimientos
+                    </p>
 
-                        <p class="ah-text-subtitulos ah-text-secondary mb-0">
-                            Limpieza de aire acondicionado · 10 de mayo
-                        </p>
-
-                    </div>
-
-                    <div class="col-auto">
-                        <span class="ah-status ah-status-success">
-                            Completado
-                        </span>
-                    </div>
+                    <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                        No hay solicitudes de mantenimiento registradas.
+                    </p>
 
                 </div>
 
-            </div>
+            {% endif %}
 
         </section>
 
     </div>
 
 </div>
+
 
 {% endblock %}

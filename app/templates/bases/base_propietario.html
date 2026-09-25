@@ -12,62 +12,50 @@ AdminHaus - Panel del propietario
 
     <div class="h-100 d-flex flex-column p-3">
 
-
         <!-- LOGO -->
-
-        <div class="d-flex justify-content-center mb-4">
+        <div class="d-flex justify-content-center pt-3 mb-2">
 
             <img
                 src="{{ url_for('static', filename='media/logo_oscuro-Photoroom.png') }}"
                 alt="AdminHaus"
-                class="img-fluid w-75"
+                class="img-fluid"
+                style="width: 190px;"
             >
 
         </div>
 
 
         <!-- DESCRIPCIÓN -->
-
-        <p class="ah-text-subtitulos ah-text-secondary mb-4">
+        <p class="ah-text-peque ah-text-secondary px-3 mb-4 pb-2">
             Panel del propietario
         </p>
 
 
         <!-- ROL -->
-
         <p class="ah-text-peque ah-text-secondary text-uppercase mb-2">
             Propietario
         </p>
 
 
         <!-- MENÚ -->
-
         <nav aria-label="Menú del propietario">
 
             <ul class="list-unstyled mb-0">
 
-
                 <!-- DASHBOARD -->
-
                 <li class="mb-2">
 
                     <a
-                        href="{{ url_for('dashboard_propietario') }}"
-                        class="
-                            d-block
-                            ah-text-white
-                            ah-text-regular-negrita
-                            rounded
-                            px-3
-                            py-2
-                            {% if request.endpoint == 'dashboard_propietario' %}
-                                ah-bg-primary-hover
-                            {% endif %}
-                        "
-                        {% if request.endpoint == 'dashboard_propietario' %}
+                        href="{{ url_for('dashboard.dashboard_propietario') }}"
+                        class="ah-sidebar-link
+                        {% if request.endpoint == 'dashboard.dashboard_propietario' %}
+                            active
+                        {% endif %}"
+                        {% if request.endpoint == 'dashboard.dashboard_propietario' %}
                             aria-current="page"
                         {% endif %}
                     >
+                        <i class="bi bi-speedometer2 me-2"></i>
                         Dashboard
                     </a>
 
@@ -75,23 +63,13 @@ AdminHaus - Panel del propietario
 
 
                 <!-- MIS PROPIEDADES -->
-
                 <li class="mb-2">
 
                     <a
-                        href="{{ url_for('propiedades') }}"
-                        class="
-                            d-block
-                            ah-text-white
-                            ah-text-regular-negrita
-                            rounded
-                            px-3
-                            py-2
-                            {% if request.endpoint == 'propiedades' %}
-                                ah-bg-primary-hover
-                            {% endif %}
-                        "
+                        href="#"
+                        class="ah-sidebar-link"
                     >
+                        <i class="bi bi-house-door me-2"></i>
                         Mis propiedades
                     </a>
 
@@ -99,23 +77,13 @@ AdminHaus - Panel del propietario
 
 
                 <!-- CONTRATOS -->
-
                 <li class="mb-2">
 
                     <a
-                        href="{{ url_for('contratos') }}"
-                        class="
-                            d-block
-                            ah-text-white
-                            ah-text-regular-negrita
-                            rounded
-                            px-3
-                            py-2
-                            {% if request.endpoint == 'contratos' %}
-                                ah-bg-primary-hover
-                            {% endif %}
-                        "
+                        href="#"
+                        class="ah-sidebar-link"
                     >
+                        <i class="bi bi-file-earmark-text me-2"></i>
                         Contratos
                     </a>
 
@@ -123,23 +91,13 @@ AdminHaus - Panel del propietario
 
 
                 <!-- PAGOS -->
-
                 <li class="mb-2">
 
                     <a
-                        href="{{ url_for('pagos') }}"
-                        class="
-                            d-block
-                            ah-text-white
-                            ah-text-regular-negrita
-                            rounded
-                            px-3
-                            py-2
-                            {% if request.endpoint == 'pagos' %}
-                                ah-bg-primary-hover
-                            {% endif %}
-                        "
+                        href="#"
+                        class="ah-sidebar-link"
                     >
+                        <i class="bi bi-cash-stack me-2"></i>
                         Pagos
                     </a>
 
@@ -147,32 +105,48 @@ AdminHaus - Panel del propietario
 
 
                 <!-- MANTENIMIENTOS -->
-
                 <li class="mb-2">
 
                     <a
-                        href="{{ url_for('mantenimientos') }}"
-                        class="
-                            d-block
-                            ah-text-white
-                            ah-text-regular-negrita
-                            rounded
-                            px-3
-                            py-2
-                            {% if request.endpoint == 'mantenimientos' %}
-                                ah-bg-primary-hover
-                            {% endif %}
-                        "
+                        href="#"
+                        class="ah-sidebar-link"
                     >
+                        <i class="bi bi-tools me-2"></i>
                         Mantenimientos
                     </a>
 
                 </li>
 
-
             </ul>
 
         </nav>
+
+
+        <!-- USUARIO / CERRAR SESIÓN -->
+        <div class="mt-auto pt-4">
+
+            <div class="border-top border-secondary pt-3 mb-3">
+
+                <p class="ah-text-peque ah-text-secondary mb-1">
+                    Sesión iniciada como
+                </p>
+
+                <p class="ah-text-regular-negrita ah-text-white mb-0">
+                    {{ session.get('username', 'Propietario') }}
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('auth.logout') }}"
+                class="ah-sidebar-link"
+            >
+                <i class="bi bi-box-arrow-right me-2"></i>
+                Cerrar sesión
+            </a>
+
+        </div>
 
     </div>
 
