@@ -1,95 +1,206 @@
 {% extends "bases/base.html" %}
 
-
-{#
-    =========================================
-    BASE DEL ROL GESTOR
-    Reutiliza el layout de base.html y solo
-    reemplaza el menú lateral.
-
-    Para agregar una opción al menú, añade
-    una línea a la lista "menu_gestor":
-    (nombre_de_la_ruta_en_app.py, "Texto")
-    =========================================
-#}
-
-{% set menu_gestor = [
-    ('dashboard_gestor', 'Dashboard'),
-    ('propietarios',     'Propietarios'),
-    ('inquilinos',       'Inquilinos'),
-    ('propiedades',      'Propiedades'),
-    ('contratos',        'Contratos'),
-    ('pagos',            'Pagos'),
-    ('mantenimientos',   'Mantenimientos'),
-    ('proveedores',      'Proveedores'),
-] %}
-
+{% block title %}
+AdminHaus - Panel administrativo
+{% endblock %}
 
 {% block sidebar %}
 
 <aside class="col-12 col-lg-2 ah-bg-primary">
-
     <div class="h-100 d-flex flex-column p-3">
 
-
         <!-- LOGO -->
-
-        <div class="d-flex justify-content-center pt-3 mb-1">
-
+        <div class="d-flex justify-content-center mb-4">
             <img
                 src="{{ url_for('static', filename='media/logo_oscuro-Photoroom.png') }}"
                 alt="AdminHaus"
-                class="img-fluid"
-                style="width: 190px;"
+                class="img-fluid w-75"
             >
-
         </div>
 
-
         <!-- DESCRIPCIÓN -->
-
-        <p class="ah-text-peque ah-text-secondary px-3 mb-4 pb-2">
+        <p class="ah-text-subtitulos ah-text-white mb-4">
             Panel administrativo
         </p>
 
-
-        <!-- ETIQUETA DEL ROL -->
-
+        <!-- ROL -->
         <p class="ah-text-peque ah-text-secondary text-uppercase mb-2">
             Gestor
         </p>
 
-
-        <!-- =================================
-             MENÚ PRINCIPAL
-             ================================= -->
-
+        <!-- MENÚ PRINCIPAL -->
         <nav aria-label="Menú del gestor">
-
             <ul class="list-unstyled mb-0">
 
-                {% for endpoint, texto in menu_gestor %}
-
+                <!-- DASHBOARD -->
                 <li class="mb-2">
-
                     <a
-                        href="{{ url_for(endpoint) }}"
-                        class="ah-sidebar-link {% if request.endpoint == endpoint %}active{% endif %}"
-                        {% if request.endpoint == endpoint %}aria-current="page"{% endif %}
+                        href="{{ url_for('dashboard.dashboard_gestor') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'dashboard.dashboard_gestor' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                        {% if request.endpoint == 'dashboard.dashboard_gestor' %}
+                            aria-current="page"
+                        {% endif %}
                     >
-                        {{ texto }}
+                        Dashboard
                     </a>
-
                 </li>
 
-                {% endfor %}
+                <!-- PROPIETARIOS -->
+                <li class="mb-2">
+                    <a
+                        href="{{ url_for('propietarios.lista') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'propietarios.lista' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                        {% if request.endpoint == 'propietarios.lista' %}
+                            aria-current="page"
+                        {% endif %}
+                    >
+                        Propietarios
+                    </a>
+                </li>
+
+                <!-- INQUILINOS -->
+                <li class="mb-2">
+                    <a
+                        href="#"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                        "
+                    >
+                        Inquilinos
+                    </a>
+                </li>
+
+                <!-- PROPIEDADES -->
+                <li class="mb-2">
+                    <a
+                        href="#"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                        "
+                    >
+                        Propiedades
+                    </a>
+                </li>
+
+                <!-- CONTRATOS -->
+                <li class="mb-2">
+                    <a
+                        href="#"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                        "
+                    >
+                        Contratos
+                    </a>
+                </li>
+
+                <!-- PAGOS -->
+                <li class="mb-2">
+                    <a
+                        href="#"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                        "
+                    >
+                        Pagos
+                    </a>
+                </li>
+
+                <!-- MANTENIMIENTOS -->
+                <li class="mb-2">
+                    <a
+                        href="#"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                        "
+                    >
+                        Mantenimientos
+                    </a>
+                </li>
+
+                <!-- PROVEEDORES -->
+                <li class="mb-2">
+                    <a
+                        href="#"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                        "
+                    >
+                        Proveedores
+                    </a>
+                </li>
 
             </ul>
-
         </nav>
 
-    </div>
+        <!-- CERRAR SESIÓN -->
+        <div class="mt-auto pt-4">
+            <a
+                href="{{ url_for('auth.logout') }}"
+                class="
+                    d-block
+                    ah-text-white
+                    ah-text-regular-negrita
+                    rounded
+                    px-3
+                    py-2
+                "
+            >
+                Cerrar sesión
+            </a>
+        </div>
 
+    </div>
 </aside>
 
 {% endblock %}

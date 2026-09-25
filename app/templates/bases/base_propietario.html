@@ -44,21 +44,25 @@ AdminHaus - Panel del propietario
 
                 <!-- DASHBOARD -->
                 <li class="mb-2">
-
                     <a
                         href="{{ url_for('dashboard.dashboard_propietario') }}"
-                        class="ah-sidebar-link
-                        {% if request.endpoint == 'dashboard.dashboard_propietario' %}
-                            active
-                        {% endif %}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            {% if request.endpoint == 'dashboard.dashboard_propietario' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
                         {% if request.endpoint == 'dashboard.dashboard_propietario' %}
                             aria-current="page"
                         {% endif %}
                     >
-                        <i class="bi bi-speedometer2 me-2"></i>
                         Dashboard
                     </a>
-
                 </li>
 
 
