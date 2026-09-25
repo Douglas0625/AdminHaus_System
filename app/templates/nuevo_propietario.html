@@ -1,83 +1,295 @@
-{% extends "base.html" %}
-
+{% if session.get('rol') == 'ADMINISTRADOR' %}
+{% extends "bases/base_admin.html" %}
+{% elif session.get('rol') == 'GESTOR' %}
+{% extends "bases/base_gestor.html" %}
+{% else %}
+{% extends "bases/base.html" %}
+{% endif %}
 
 {% block title %}
+{% if modo == "detalle" %}
+Detalle del propietario - AdminHaus
+{% elif propietario %}
+Editar propietario - AdminHaus
+{% else %}
 Nuevo propietario - AdminHaus
+{% endif %}
 {% endblock %}
-
 
 {% block content %}
 
-
-<!-- =========================================
-     ENCABEZADO
-     ========================================= -->
+{% with mensajes = get_flashed_messages(with_categories=true) %}
+{% if mensajes %} <div class="mb-4">
+{% for categoria, mensaje in mensajes %} <div class="ah-alert-{{ categoria }}">
+{{ mensaje }} </div>
+{% endfor %} </div>
+{% endif %}
+{% endwith %}
 
 <header class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
 
-    <div>
-
-        <h1 class="ah-text-grande mb-0">
+<div>
+    <h1 class="ah-text-grande mb-0">
+        {% if modo == "detalle" %}
+            Detalle del propietario
+        {% elif propietario %}
+            Editar propietario
+        {% else %}
             Nuevo propietario
-        </h1>
+        {% endif %}
+    </h1>
 
-        <p class="ah-text-subtitulos ah-text-secondary mb-0">
-            Registra la información del propietario.
-        </p>
+    <p class="ah-text-subtitulos ah-text-secondary mb-0">
+        {% if modo == "detalle" %}
+            Consulta la información del propietario y su cuenta de acceso.
+        {% elif propietario %}
+            Actualiza la información del propietario y su cuenta.
+        {% else %}
+            Registra un propietario y crea su cuenta de acceso.
+        {% endif %}
+    </p>
+</div>
 
-    </div>
+<div class="d-flex gap-2">
 
+    <a
+        href="{{ url_for('propietarios.lista') }}"
+        class="ah-btn-secondary d-inline-block"
+    >
+        Volver
+    </a>
 
-    <div class="d-flex gap-2">
+    {% if modo == "detalle" %}
 
         <a
-            href="{{ url_for('propietarios') }}"
-            class="ah-btn-secondary d-inline-block"
+            href="{{ url_for('propietarios.editar', propietario_id=propietario.id) }}"
+            class="ah-btn-primary d-inline-block"
         >
-            Cancelar
+            <i class="bi bi-pencil me-1"></i>
+            Editar propietario
         </a>
 
-        <!-- El botón está fuera del formulario, por eso usa form="..." -->
+    {% else %}
 
         <button
             type="submit"
             form="form-propietario"
             class="ah-btn-primary"
         >
-            Guardar propietario
+            {% if propietario %}
+                Guardar cambios
+            {% else %}
+                Guardar propietario
+            {% endif %}
         </button>
 
-    </div>
+    {% endif %}
+
+</div>
+
 
 </header>
 
+{% if modo == "detalle" %}
 
 
 <!-- =========================================
-     FORMULARIO
+     MODO DETALLE
+     ========================================= -->
+
+<section class="ah-card p-4 mb-4">
+
+    <h2 class="ah-text-titulos-2 mb-4">
+        Información personal
+    </h2>
+
+    <div class="row g-4">
+
+        <div class="col-12 col-md-6">
+            <label class="ah-form-label">
+                Nombre
+            </label>
+
+            <p class="ah-text-regular mb-0">
+                {{ propietario.nombre }}
+            </p>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label class="ah-form-label">
+                Apellido
+            </label>
+
+            <p class="ah-text-regular mb-0">
+                {{ propietario.apellido }}
+            </p>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label class="ah-form-label">
+                DUI
+            </label>
+
+            <p class="ah-text-regular mb-0">
+                {{ propietario.dui }}
+            </p>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label class="ah-form-label">
+                Teléfono
+            </label>
+
+            <p class="ah-text-regular mb-0">
+                {{ propietario.telefono or 'No registrado' }}
+            </p>
+        </div>
+
+        <div class="col-12">
+            <label class="ah-form-label">
+                Correo electrónico
+            </label>
+
+            <p class="ah-text-regular mb-0">
+                {{ propietario.correo or 'No registrado' }}
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="ah-card p-4 mb-4">
+
+    <h2 class="ah-text-titulos-2 mb-4">
+        Cuenta de usuario
+    </h2>
+
+    {% if propietario.usuario %}
+
+        <div class="row g-4">
+
+            <div class="col-12 col-md-6">
+
+                <label class="ah-form-label">
+                    Nombre de usuario
+                </label>
+
+                <p class="ah-text-regular mb-0">
+                    {{ propietario.usuario.username }}
+                </p>
+
+            </div>
+
+            <div class="col-12 col-md-6">
+
+                <label class="ah-form-label">
+                    Rol
+                </label>
+
+                <p class="ah-text-regular mb-0">
+                    {{ propietario.usuario.rol }}
+                </p>
+
+            </div>
+
+            <div class="col-12">
+
+                <label class="ah-form-label">
+                    Estado de la cuenta
+                </label>
+
+                <div>
+
+                    {% if propietario.usuario.activo %}
+
+                        <span class="ah-status ah-status-success">
+                            Activo
+                        </span>
+
+                    {% else %}
+
+                        <span class="ah-status ah-status-danger">
+                            Inactivo
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="ah-bg-background rounded p-3">
+
+            <p class="ah-text-regular ah-text-secondary mb-0">
+                Este propietario no tiene una cuenta de usuario asociada.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<section class="ah-card p-4">
+
+    <h2 class="ah-text-titulos-2 mb-4">
+        Propiedades
+    </h2>
+
+    <div class="ah-bg-background rounded p-3">
+
+        <p class="ah-text-regular ah-text-secondary mb-0">
+            Las propiedades asociadas a este propietario se mostrarán
+            aquí cuando esté disponible el módulo de Propiedades.
+        </p>
+
+    </div>
+
+</section>
+```
+
+{% else %}
+
+
+<!-- =========================================
+     MODO CREAR / EDITAR
      ========================================= -->
 
 <form
     id="form-propietario"
     method="POST"
-    action="{{ url_for('nuevo_propietario') }}"
-    class="ah-card overflow-hidden"
+    action="{% if propietario %}
+                {{ url_for('propietarios.editar', propietario_id=propietario.id) }}
+            {% else %}
+                {{ url_for('propietarios.nuevo') }}
+            {% endif %}"
 >
 
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ csrf_token() }}"
+    >
 
-    <!-- =====================================
+
+    <!-- =========================================
          INFORMACIÓN PERSONAL
-         ===================================== -->
+         ========================================= -->
 
-    <section class="ah-form-section p-4">
+    <section class="ah-card p-4 mb-4">
 
-        <h2 class="ah-form-section-title">
+        <h2 class="ah-text-titulos-2 mb-4">
             Información personal
         </h2>
 
         <div class="row g-4">
-
-            <!-- NOMBRE -->
 
             <div class="col-12 col-md-6">
 
@@ -92,13 +304,12 @@ Nuevo propietario - AdminHaus
                     class="ah-form-control"
                     placeholder="Ej. Juan"
                     autocomplete="given-name"
+                    value="{{ propietario.nombre if propietario else (form.get('nombre', '') if form else '') }}"
                     required
                 >
 
             </div>
 
-
-            <!-- APELLIDO -->
 
             <div class="col-12 col-md-6">
 
@@ -113,13 +324,12 @@ Nuevo propietario - AdminHaus
                     class="ah-form-control"
                     placeholder="Ej. Pérez"
                     autocomplete="family-name"
+                    value="{{ propietario.apellido if propietario else (form.get('apellido', '') if form else '') }}"
                     required
                 >
 
             </div>
 
-
-            <!-- DUI -->
 
             <div class="col-12 col-md-6">
 
@@ -136,14 +346,13 @@ Nuevo propietario - AdminHaus
                     inputmode="numeric"
                     maxlength="10"
                     pattern="[0-9]{8}-[0-9]"
-                    title="Formato del DUI: 8 dígitos, guion y 1 dígito (01234567-8)"
+                    title="Formato del DUI: 8 dígitos, guion y 1 dígito"
+                    value="{{ propietario.dui if propietario else (form.get('dui', '') if form else '') }}"
                     required
                 >
 
             </div>
 
-
-            <!-- TELÉFONO -->
 
             <div class="col-12 col-md-6">
 
@@ -158,12 +367,11 @@ Nuevo propietario - AdminHaus
                     class="ah-form-control"
                     placeholder="Ej. 7000-1234"
                     autocomplete="tel"
+                    value="{{ propietario.telefono if propietario and propietario.telefono else (form.get('telefono', '') if form else '') }}"
                 >
 
             </div>
 
-
-            <!-- CORREO -->
 
             <div class="col-12">
 
@@ -178,6 +386,7 @@ Nuevo propietario - AdminHaus
                     class="ah-form-control"
                     placeholder="Ej. juan@email.com"
                     autocomplete="email"
+                    value="{{ propietario.correo if propietario and propietario.correo else (form.get('correo', '') if form else '') }}"
                 >
 
             </div>
@@ -187,78 +396,47 @@ Nuevo propietario - AdminHaus
     </section>
 
 
-
-    <!-- =====================================
+    <!-- =========================================
          CUENTA DE USUARIO
-         ===================================== -->
+         ========================================= -->
 
-    <section class="ah-form-section p-4">
+    <section class="ah-card p-4 mb-4">
 
-        <h2 class="ah-form-section-title">
+        <h2 class="ah-text-titulos-2 mb-4">
             Cuenta de usuario
         </h2>
 
-
-        <!-- AVISO -->
-
-        <div class="ah-info-box mb-4">
+        <div class="ah-bg-background rounded p-3 mb-4">
 
             <p class="ah-text-regular-negrita mb-2">
                 Cuenta de acceso
             </p>
 
             <p class="ah-text-regular ah-text-secondary mb-0">
-                El propietario puede tener una cuenta para consultar la información de sus propiedades.
+
+                {% if propietario %}
+
+                    Esta cuenta permite al propietario iniciar sesión
+                    y consultar la información de sus propiedades.
+
+                {% else %}
+
+                    Se creará automáticamente una cuenta con rol
+                    PROPIETARIO para acceder al sistema.
+
+                {% endif %}
+
             </p>
 
         </div>
 
 
-        <!-- ¿CREAR CUENTA? -->
-
-        <div class="mb-4">
-
-            <span id="etiqueta-crear-cuenta" class="ah-form-label">
-                Crear cuenta de usuario
-            </span>
-
-            <div
-                class="ah-toggle"
-                role="radiogroup"
-                aria-labelledby="etiqueta-crear-cuenta"
-            >
-
-                <input
-                    type="radio"
-                    id="crear-cuenta-si"
-                    name="crear_cuenta"
-                    value="si"
-                    checked
-                >
-                <label for="crear-cuenta-si">Sí</label>
-
-                <input
-                    type="radio"
-                    id="crear-cuenta-no"
-                    name="crear_cuenta"
-                    value="no"
-                >
-                <label for="crear-cuenta-no">No</label>
-
-            </div>
-
-        </div>
-
-
-        <!-- USUARIO Y CONTRASEÑA
-             (se ocultan cuando se elige "No") -->
-
-        <div id="campos-cuenta" class="row g-4">
+        <div class="row g-4">
 
             <div class="col-12 col-md-6">
 
                 <label for="usuario" class="ah-form-label">
-                    Nombre de usuario
+                    Nombre de usuario *
                 </label>
 
                 <input
@@ -268,6 +446,7 @@ Nuevo propietario - AdminHaus
                     class="ah-form-control"
                     placeholder="Ej. juan.perez"
                     autocomplete="off"
+                    value="{% if propietario and propietario.usuario %}{{ propietario.usuario.username }}{% elif form %}{{ form.get('usuario', '') }}{% endif %}"
                     required
                 >
 
@@ -277,7 +456,13 @@ Nuevo propietario - AdminHaus
             <div class="col-12 col-md-6">
 
                 <label for="contrasena" class="ah-form-label">
-                    Contraseña
+
+                    {% if propietario %}
+                        Nueva contraseña
+                    {% else %}
+                        Contraseña *
+                    {% endif %}
+
                 </label>
 
                 <input
@@ -285,10 +470,18 @@ Nuevo propietario - AdminHaus
                     id="contrasena"
                     name="contrasena"
                     class="ah-form-control"
-                    placeholder="Ej. ••••••••"
+                    placeholder="{% if propietario %}Dejar vacío para conservar la actual{% else %}••••••••{% endif %}"
                     autocomplete="new-password"
-                    required
+                    {% if not propietario %}required{% endif %}
                 >
+
+                {% if propietario %}
+
+                    <p class="ah-text-peque ah-text-secondary mt-2 mb-0">
+                        Deja este campo vacío si no deseas cambiar la contraseña.
+                    </p>
+
+                {% endif %}
 
             </div>
 
@@ -297,22 +490,21 @@ Nuevo propietario - AdminHaus
     </section>
 
 
-
-    <!-- =====================================
+    <!-- =========================================
          PROPIEDADES
-         ===================================== -->
+         ========================================= -->
 
-    <section class="ah-form-section p-4">
+    <section class="ah-card p-4">
 
-        <h2 class="ah-form-section-title">
+        <h2 class="ah-text-titulos-2 mb-4">
             Propiedades
         </h2>
 
-        <div class="ah-bg-background card my-4 border-0 p-3" >
-
+        <div class="ah-bg-background rounded p-3">
 
             <p class="ah-text-regular ah-text-secondary mb-0">
-                Las propiedades se podrán asociar posteriormente desde el módulo de Propiedades.
+                Las propiedades se podrán asociar posteriormente
+                desde el módulo de Propiedades.
             </p>
 
         </div>
@@ -322,32 +514,6 @@ Nuevo propietario - AdminHaus
 </form>
 
 
-<script>
-    // Muestra u oculta usuario y contraseña según la opción elegida.
-    // Al ocultarlos también se desactivan, para que no se validen ni se envíen.
-    (function () {
-        const opciones = document.querySelectorAll('input[name="crear_cuenta"]');
-        const campos = document.getElementById('campos-cuenta');
-        const inputs = campos.querySelectorAll('input');
-
-        function actualizar() {
-            const crear = document.querySelector('input[name="crear_cuenta"]:checked').value === 'si';
-
-            campos.classList.toggle('d-none', !crear);
-
-            inputs.forEach(function (input) {
-                input.disabled = !crear;
-                input.required = crear;
-            });
-        }
-
-        opciones.forEach(function (opcion) {
-            opcion.addEventListener('change', actualizar);
-        });
-
-        actualizar();
-    })();
-</script>
-
+{% endif %}
 
 {% endblock %}

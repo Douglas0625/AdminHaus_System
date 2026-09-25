@@ -2,7 +2,6 @@ from app import db
 
 
 class Propietario(db.Model):
-
     __tablename__ = "propietario"
 
     id = db.Column(
@@ -22,8 +21,8 @@ class Propietario(db.Model):
 
     dui = db.Column(
         db.String(10),
-        unique=True,
-        nullable=False
+        nullable=False,
+        unique=True
     )
 
     telefono = db.Column(
@@ -39,3 +38,14 @@ class Propietario(db.Model):
         db.ForeignKey("usuario.id", ondelete="SET NULL"),
         unique=True
     )
+
+    usuario = db.relationship(
+        "Usuario",
+        backref=db.backref(
+            "propietario",
+            uselist=False
+        )
+    )
+
+    def __repr__(self):
+        return f"<Propietario {self.nombre} {self.apellido}>"

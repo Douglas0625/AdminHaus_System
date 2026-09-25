@@ -1,62 +1,183 @@
-{% extends "base.html" %}
+{% if session.get('rol') == 'ADMINISTRADOR' %}
+    {% extends "bases/base_admin.html" %}
+{% elif session.get('rol') == 'GESTOR' %}
+    {% extends "bases/base_gestor.html" %}
+{% elif session.get('rol') == 'PROPIETARIO' %}
+    {% extends "bases/base_propietario.html" %}
+{% else %}
+    {% extends "bases/base.html" %}
+{% endif %}
 
-{% block title %}
-Propietarios - AdminHaus
-{% endblock %}
+{% block title %}Propietarios - AdminHaus{% endblock %}
 
 {% block content %}
 
-<!-- =========================================
-     ENCABEZADO
-     ========================================= -->
-<header class="mb-4">
+<div class="container-fluid px-4 py-4">
 
-    <div class="d-flex justify-content-between align-items-start">
+    <!-- =========================================
+         ENCABEZADO
+         ========================================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
-            <h1 class="ah-text-grande mb-1">
+            <h1 class="ah-text-titulos mb-1">
                 Propietarios
             </h1>
 
-            <p class="ah-text-subtitulos ah-text-secondary mb-0">
-                Gestiona la información de los propietarios y sus propiedades.
+            <p class="ah-text-regular ah-text-secondary mb-0">
+                Gestión de propietarios registrados en AdminHaus
             </p>
         </div>
 
-        <a href="{{ url_for('dashboard_admin') }}"
-           class="btn ah-btn-primary">
-            + Nuevo propietario
+        <a
+            href="{{ url_for('propietarios.nuevo') }}"
+            class="ah-btn-primary"
+        >
+            <i class="bi bi-person-plus me-1"></i>
+            Nuevo propietario
         </a>
 
     </div>
 
-</header>
+
+    <!-- =========================================
+         MENSAJES
+         ========================================= -->
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+            {% for category, message in messages %}
+
+                {% if category == 'success' %}
+
+                    <div class="ah-alert-success rounded p-3 mb-3 ah-text-regular">
+
+                {% elif category == 'warning' %}
+
+                    <div class="ah-alert-warning rounded p-3 mb-3 ah-text-regular">
+
+                {% elif category == 'danger' %}
+
+                    <div class="ah-alert-danger rounded p-3 mb-3 ah-text-regular">
+
+                {% else %}
+
+                    <div class="ah-alert-info rounded p-3 mb-3 ah-text-regular">
+
+                {% endif %}
+
+                    {{ message }}
+
+                    </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
 
 
-<!-- =========================================
-     BÚSQUEDA Y FILTROS
-     ========================================= -->
-<div class="row g-3 mb-3">
+    <!-- =========================================
+         FILTROS
+         ========================================= -->
 
-    <!-- BUSCADOR -->
-    <div class="col-12 col-md-9">
+    <div class="ah-card p-4 mb-4">
 
-        <form method="GET"
-              action="{{ url_for('dashboard_admin') }}">
+        <form
+            method="GET"
+            action="{{ url_for('propietarios.lista') }}"
+        >
 
-            <div class="input-group">
+            <div class="row g-3 align-items-end">
 
-                <span class="input-group-text">
-                    <i class="bi bi-search"></i>
-                </span>
+                <!-- BÚSQUEDA -->
 
-                <input
-                    type="text"
-                    name="buscar"
-                    class="form-control"
-                    placeholder="Buscar por nombre, DUI o correo..."
-                    value="{{ request.args.get('buscar', '') }}"
-                >
+                <div class="col-12 col-md-6">
+
+                    <label
+                        for="buscar"
+                        class="ah-form-label"
+                    >
+                        Buscar propietario
+                    </label>
+
+                    <input
+                        type="text"
+                        id="buscar"
+                        name="buscar"
+                        class="ah-form-control"
+                        value="{{ buscar }}"
+                        placeholder="Nombre, apellido, DUI o correo"
+                    >
+
+                </div>
+
+
+                <!-- ESTADO -->
+
+                <div class="col-12 col-md-3">
+
+                    <label
+                        for="estado"
+                        class="ah-form-label"
+                    >
+                        Estado
+                    </label>
+
+                    <select
+                        id="estado"
+                        name="estado"
+                        class="ah-form-select"
+                    >
+
+                        <option
+                            value="todos"
+                            {% if estado == 'todos' %}
+                                selected
+                            {% endif %}
+                        >
+                            Todos
+                        </option>
+
+                        <option
+                            value="activo"
+                            {% if estado == 'activo' %}
+                                selected
+                            {% endif %}
+                        >
+                            Activo
+                        </option>
+
+                        <option
+                            value="inactivo"
+                            {% if estado == 'inactivo' %}
+                                selected
+                            {% endif %}
+                        >
+                            Inactivo
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- BOTÓN -->
+
+                <div class="col-12 col-md-3">
+
+                    <button
+                        type="submit"
+                        class="ah-btn-primary w-100"
+                    >
+                        <i class="bi bi-search me-1"></i>
+                        Buscar
+                    </button>
+
+                </div>
 
             </div>
 
@@ -65,380 +186,250 @@ Propietarios - AdminHaus
     </div>
 
 
-    <!-- FILTRO ESTADO -->
-    <div class="col-12 col-md-3">
+    <!-- =========================================
+         TABLA
+         ========================================= -->
 
-        <select
-            name="estado"
-            class="form-select"
-            onchange="this.form.submit()"
-        >
+    <div class="ah-table-container">
 
-            <option value="todos">
-                Todos
-            </option>
+        <div class="table-responsive">
 
-            <option value="activo"
-                {% if request.args.get('estado') == 'activo' %}
-                    selected
-                {% endif %}
-            >
-                Activo
-            </option>
+            <table class="ah-table">
 
-            <option value="inactivo"
-                {% if request.args.get('estado') == 'inactivo' %}
-                    selected
-                {% endif %}
-            >
-                Inactivo
-            </option>
+                <thead>
 
-        </select>
+                    <tr>
+
+                        <th>Propietario</th>
+                        <th>DUI</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th>Cuenta</th>
+                        <th>Propiedades</th>
+                        <th class="text-end">Acciones</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% if propietarios %}
+
+                        {% for propietario in propietarios %}
+
+                            <tr>
+
+                                <!-- PROPIETARIO -->
+
+                                <td>
+
+                                    <div class="ah-text-regular-negrita">
+
+                                        {{ propietario.nombre }}
+                                        {{ propietario.apellido }}
+
+                                    </div>
+
+                                    <div class="ah-text-peque ah-text-secondary">
+
+                                        ID: {{ propietario.id }}
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- DUI -->
+
+                                <td>
+                                    {{ propietario.dui }}
+                                </td>
+
+
+                                <!-- TELÉFONO -->
+
+                                <td>
+                                    {{ propietario.telefono or '-' }}
+                                </td>
+
+
+                                <!-- CORREO -->
+
+                                <td>
+                                    {{ propietario.correo or '-' }}
+                                </td>
+
+
+                                <!-- CUENTA -->
+
+                                <td>
+
+                                    {% if propietario.usuario is none %}
+
+                                        <span class="ah-status ah-status-soft">
+                                            Sin cuenta
+                                        </span>
+
+                                    {% elif propietario.usuario.activo %}
+
+                                        <span class="ah-status ah-status-success">
+                                            Activo
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="ah-status ah-status-danger">
+                                            Inactivo
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- PROPIEDADES -->
+
+                                <td>
+
+                                    <span class="ah-text-secondary ah-text-regular">
+                                        Pendiente
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ACCIONES -->
+
+                                <td class="text-end">
+
+                                    <div class="d-flex justify-content-end gap-2">
+
+                                        <!-- VER -->
+
+                                        <a
+                                            href="{{ url_for(
+                                                'propietarios.detalle',
+                                                propietario_id=propietario.id
+                                            ) }}"
+                                            class="ah-btn-secondary"
+                                            title="Ver detalle"
+                                        >
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+
+                                        <!-- EDITAR -->
+
+                                        <a
+                                            href="{{ url_for(
+                                                'propietarios.editar',
+                                                propietario_id=propietario.id
+                                            ) }}"
+                                            class="ah-btn-secondary"
+                                            title="Editar"
+                                        >
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+
+
+                                        <!-- ACTIVAR / DESACTIVAR -->
+
+                                        {% if session.get('rol') == 'ADMINISTRADOR'
+                                              and propietario.usuario %}
+
+                                            <form
+                                                method="POST"
+                                                action="{{ url_for(
+                                                    'propietarios.cambiar_estado',
+                                                    propietario_id=propietario.id
+                                                ) }}"
+                                                class="d-inline"
+                                            >
+
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                                {% if propietario.usuario.activo %}
+
+                                                    <button
+                                                        type="submit"
+                                                        class="ah-btn-danger"
+                                                        title="Desactivar cuenta"
+                                                        onclick="return confirm(
+                                                            '¿Deseas desactivar la cuenta de este propietario?'
+                                                        );"
+                                                    >
+                                                        <i class="bi bi-person-x"></i>
+                                                    </button>
+
+                                                {% else %}
+
+                                                    <button
+                                                        type="submit"
+                                                        class="ah-btn-primary"
+                                                        title="Activar cuenta"
+                                                        onclick="return confirm(
+                                                            '¿Deseas activar la cuenta de este propietario?'
+                                                        );"
+                                                    >
+                                                        <i class="bi bi-person-check"></i>
+                                                    </button>
+
+                                                {% endif %}
+
+                                            </form>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <!-- SIN RESULTADOS -->
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="text-center py-5"
+                            >
+
+                                <div class="ah-text-secondary">
+
+                                    <i class="bi bi-people fs-1"></i>
+
+                                    <p class="ah-text-regular-negrita mt-3 mb-1">
+                                        No hay propietarios registrados
+                                    </p>
+
+                                    <p class="ah-text-regular mb-0">
+                                        Puedes registrar un nuevo propietario
+                                        utilizando el botón superior.
+                                    </p>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endif %}
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     </div>
 
 </div>
-
-
-<!-- =========================================
-     TABLA DE PROPIETARIOS
-     ========================================= -->
-<section class="ah-card p-0 overflow-hidden">
-
-    <div class="table-responsive">
-
-        <table class="table ah-table mb-0 align-middle">
-
-            <thead>
-
-                <tr>
-
-                    <th>
-                        Propietario
-                    </th>
-
-                    <th>
-                        DUI
-                    </th>
-
-                    <th>
-                        Teléfono
-                    </th>
-
-                    <th>
-                        Correo
-                    </th>
-
-                    <th>
-                        Propiedades
-                    </th>
-
-                    <th>
-                        Estado
-                    </th>
-
-                    <th class="text-center">
-                        Acciones
-                    </th>
-
-                </tr>
-
-            </thead>
-
-
-            <tbody>
-
-                {% for propietario in propietarios %}
-
-                <tr>
-
-                    <!-- PROPIETARIO -->
-                    <td>
-
-                        <span class="ah-text-regular-negrita">
-                            {{ propietario.nombre }}
-                            {{ propietario.apellido }}
-                        </span>
-
-                    </td>
-
-
-                    <!-- DUI -->
-                    <td>
-                        {{ propietario.dui }}
-                    </td>
-
-
-                    <!-- TELÉFONO -->
-                    <td>
-                        {{ propietario.telefono or '-' }}
-                    </td>
-
-
-                    <!-- CORREO -->
-                    <td>
-                        {{ propietario.correo or '-' }}
-                    </td>
-
-
-                    <!-- PROPIEDADES -->
-                    <td>
-
-                        <span class="ah-text-regular-negrita">
-                            {{ propietario.propiedades|length }}
-                        </span>
-
-                    </td>
-
-
-                    <!-- ESTADO -->
-                    <td>
-
-                        {% if propietario.activo %}
-
-                            <span class="ah-status ah-status-success">
-                                ACTIVO
-                            </span>
-
-                        {% else %}
-
-                            <span class="ah-status">
-                                INACTIVO
-                            </span>
-
-                        {% endif %}
-
-                    </td>
-
-
-                    <!-- ACCIONES -->
-                    <td class="text-center">
-
-                        <div class="d-flex justify-content-center gap-2">
-
-                            <!-- VER -->
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-light"
-                                title="Ver propietario"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modalPropietario{{ propietario.id }}"
-                            >
-                                <i class="bi bi-eye"></i>
-                            </button>
-
-
-                            <!-- EDITAR -->
-                            <a
-                                href="{{ url_for(
-                                    'dashboard_admin',
-                                    propietario_id=propietario.id
-                                ) }}"
-                                class="btn btn-sm btn-light"
-                                title="Editar propietario"
-                            >
-                                <i class="bi bi-pencil"></i>
-                            </a>
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-
-                <!-- =========================================
-                     MODAL DETALLE DEL PROPIETARIO
-                     ========================================= -->
-                <div
-                    class="modal fade"
-                    id="modalPropietario{{ propietario.id }}"
-                    tabindex="-1"
-                    aria-hidden="true"
-                >
-
-                    <div class="modal-dialog modal-dialog-centered">
-
-                        <div class="modal-content">
-
-                            <div class="modal-header">
-
-                                <h5 class="modal-title">
-                                    Información del propietario
-                                </h5>
-
-                                <button
-                                    type="button"
-                                    class="btn-close"
-                                    data-bs-dismiss="modal"
-                                    aria-label="Cerrar"
-                                ></button>
-
-                            </div>
-
-
-                            <div class="modal-body">
-
-                                <div class="mb-3">
-
-                                    <p class="ah-text-regular-negrita mb-1">
-                                        Nombre completo
-                                    </p>
-
-                                    <p class="ah-text-regular mb-0">
-                                        {{ propietario.nombre }}
-                                        {{ propietario.apellido }}
-                                    </p>
-
-                                </div>
-
-
-                                <div class="row">
-
-                                    <div class="col-md-6 mb-3">
-
-                                        <p class="ah-text-regular-negrita mb-1">
-                                            DUI
-                                        </p>
-
-                                        <p class="ah-text-regular mb-0">
-                                            {{ propietario.dui }}
-                                        </p>
-
-                                    </div>
-
-
-                                    <div class="col-md-6 mb-3">
-
-                                        <p class="ah-text-regular-negrita mb-1">
-                                            Teléfono
-                                        </p>
-
-                                        <p class="ah-text-regular mb-0">
-                                            {{ propietario.telefono or '-' }}
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div class="mb-3">
-
-                                    <p class="ah-text-regular-negrita mb-1">
-                                        Correo electrónico
-                                    </p>
-
-                                    <p class="ah-text-regular mb-0">
-                                        {{ propietario.correo or '-' }}
-                                    </p>
-
-                                </div>
-
-
-                                <hr>
-
-
-                                <div>
-
-                                    <p class="ah-text-regular-negrita mb-2">
-                                        Propiedades asociadas
-                                    </p>
-
-                                    {% if propietario.propiedades %}
-
-                                        <ul class="list-group">
-
-                                            {% for propiedad in propietario.propiedades %}
-
-                                                <li class="list-group-item d-flex justify-content-between align-items-center">
-
-                                                    <span>
-                                                        {{ propiedad.codigo }}
-                                                    </span>
-
-                                                    <span class="ah-text-secondary">
-                                                        {{ propiedad.tipo }}
-                                                    </span>
-
-                                                </li>
-
-                                            {% endfor %}
-
-                                        </ul>
-
-                                    {% else %}
-
-                                        <p class="ah-text-secondary mb-0">
-                                            No tiene propiedades asociadas.
-                                        </p>
-
-                                    {% endif %}
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="modal-footer">
-
-                                <button
-                                    type="button"
-                                    class="btn btn-secondary"
-                                    data-bs-dismiss="modal"
-                                >
-                                    Cerrar
-                                </button>
-
-                                <a
-                                    href="{{ url_for(
-                                        'propietarios.editar',
-                                        propietario_id=propietario.id
-                                    ) }}"
-                                    class="btn btn-primary"
-                                >
-                                    Editar propietario
-                                </a>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                {% else %}
-
-                <!-- SIN REGISTROS -->
-                <tr>
-
-                    <td
-                        colspan="7"
-                        class="text-center py-5"
-                    >
-
-                        <p class="ah-text-regular-negrita mb-1">
-                            No hay propietarios registrados
-                        </p>
-
-                        <p class="ah-text-secondary mb-0">
-                            Agrega un nuevo propietario para comenzar.
-                        </p>
-
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</section>
 
 {% endblock %}
