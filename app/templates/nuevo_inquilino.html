@@ -1,409 +1,195 @@
-{% extends "base.html" %}
-
+{% extends "bases/base_admin.html" %}
 
 {% block title %}
-Inquilinos - AdminHaus
+{% if modo == 'ver' %}Detalle del inquilino{% elif modo == 'editar' %}Editar inquilino{% else %}Nuevo inquilino{% endif %} - AdminHaus
 {% endblock %}
 
-
 {% block content %}
-
-
-<!-- =========================================
-     ÍCONOS (se definen una vez y se reutilizan con <use>)
-     ========================================= -->
-
-<svg width="0" height="0" style="position: absolute;" aria-hidden="true" focusable="false">
-
-    <defs>
-
-        <symbol id="icono-buscar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </symbol>
-
-        <symbol id="icono-ver" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-        </symbol>
-
-        <symbol id="icono-editar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-        </symbol>
-
-    </defs>
-
-</svg>
-
-
 
 <!-- =========================================
      ENCABEZADO
      ========================================= -->
-
 <header class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
 
     <div>
-
         <h1 class="ah-text-grande mb-0">
-            Inquilinos
+            {% if modo == 'ver' %}
+                Detalle del inquilino
+            {% elif modo == 'editar' %}
+                Editar inquilino
+            {% else %}
+                Nuevo inquilino
+            {% endif %}
         </h1>
 
         <p class="ah-text-subtitulos ah-text-secondary mb-0">
-            Gestiona la información de los inquilinos y sus contratos.
+            {% if modo == 'ver' %}
+                Información completa del inquilino.
+            {% elif modo == 'editar' %}
+                Actualiza la información del inquilino.
+            {% else %}
+                Registra la información del inquilino.
+            {% endif %}
         </p>
-
     </div>
 
+    <div class="d-flex gap-2">
 
-    <a
-        href="{{ url_for('nuevo_inquilino') }}"
-        class="ah-btn-primary d-inline-block"
-    >
-        + Nuevo inquilino
-    </a>
+        <a
+            href="{{ url_for('inquilinos.inquilinos') }}"
+            class="ah-btn-secondary d-inline-block">
+        
+            {{ 'Volver' if modo == 'ver' else 'Cancelar' }}
+        </a>
+
+        {% if modo != 'ver' %}
+        <button
+            type="submit"
+            form="form-inquilino"
+            class="ah-btn-primary"
+        >
+            {{ 'Guardar cambios' if modo == 'editar' else 'Guardar inquilino' }}
+        </button>
+        {% endif %}
+
+    </div>
 
 </header>
 
 
-
-<!-- =========================================
-     BUSCADOR Y FILTRO
-     ========================================= -->
-
-<div class="d-flex flex-column flex-sm-row gap-2 mb-4">
-
-    <!-- BUSCADOR -->
-
-    <div class="ah-search flex-grow-1">
-
-
-        <input
-            type="search"
-            id="buscar-inquilino"
-            class="ah-form-control"
-            placeholder="Buscar por nombre, DUI o correo..."
-            aria-label="Buscar inquilinos por nombre, DUI o correo"
-            autocomplete="off"
-        >
-
+{% if error %}
+    <div class="alert alert-danger mb-3" role="alert">
+        {{ error }}
     </div>
-
-
-    <!-- FILTRO POR ESTADO -->
-
-    <select
-        id="filtro-estado"
-        class="ah-form-select fw-medium w-auto"
-        style="min-width: 168px; max-height: 40px;"
-        aria-label="Filtrar por estado"
-    >
-        <option value="todos">Todos</option>
-        <option value="activo">Activo</option>
-        <option value="inactivo">Inactivo</option>
-    </select>
-
-</div>
-
+{% endif %}
 
 
 <!-- =========================================
-     TABLA DE INQUILINOS
+     FORMULARIO / DETALLE
      ========================================= -->
-
-<div class="ah-table-container">
-
-    <div class="table-responsive">
-
-        <table class="ah-table" style="min-width: 960px;">
-
-            <caption class="visually-hidden">
-                Lista de inquilinos
-            </caption>
-
-            <colgroup>
-                <col style="width: 17%;">
-                <col style="width: 12%;">
-                <col style="width: 11%;">
-                <col style="width: 17%;">
-                <col style="width: 16%;">
-                <col style="width: 13%;">
-                <col style="width: 14%;">
-            </colgroup>
-
-            <thead>
-
-                <tr>
-                    <th scope="col">Inquilino</th>
-                    <th scope="col">DUI</th>
-                    <th scope="col">Teléfono</th>
-                    <th scope="col">Correo</th>
-                    <th scope="col">Propiedad actual</th>
-                    <th scope="col">Estado</th>
-                    <th scope="col">Acciones</th>
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-
-                <!-- INQUILINO 1 -->
-
-                <tr data-estado="activo">
-
-                    <td>
-                        <span class="ah-text-regular-negrita ah-text">Juan Martínez</span>
-                    </td>
-
-                    <td>07891234-5</td>
-
-                    <td>7001-1234</td>
-
-                    <td>juan@email.com</td>
-
-                    <td>Casa P-001</td>
-
-                    <td>
-                        <span class="ah-status ah-status-success ah-status-soft text-uppercase">Activo</span>
-                    </td>
-
-                    <td>
-
-                        <div class="d-flex gap-2">
-
-                            <button type="button" class="btn bg-light" aria-label="Ver a Roberto Pérez" title="Ver">
-                                <i class="bi bi-eye"></i>
-                            </button>
-
-                            <button type="button" class="btn bg-light" aria-label="Editar a Roberto Pérez" title="Editar">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-
-                <!-- INQUILINO 2 -->
-
-                <tr data-estado="activo">
-
-                    <td>
-                        <span class="ah-text-regular-negrita ah-text">María López</span>
-                    </td>
-
-                    <td>06782345-6</td>
-
-                    <td>7112-2345</td>
-
-                    <td>maria@email.com</td>
-
-                    <td>Apartamento P-007</td>
-
-                    <td>
-                        <span class="ah-status ah-status-success ah-status-soft text-uppercase">Activo</span>
-                    </td>
-
-                    <td>
-
-                        <div class="d-flex gap-2">
-
-                            <button type="button" class="btn bg-light" aria-label="Ver a Roberto Pérez" title="Ver">
-                                <i class="bi bi-eye"></i>
-                            </button>
-
-                            <button type="button" class="btn bg-light" aria-label="Editar a Roberto Pérez" title="Editar">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-
-                <!-- INQUILINO 3 -->
-
-                <tr data-estado="activo">
-
-                    <td>
-                        <span class="ah-text-regular-negrita ah-text">Carlos Hernández</span>
-                    </td>
-
-                    <td>05673456-7</td>
-
-                    <td>7223-3456</td>
-
-                    <td>carlos@email.com</td>
-
-                    <td>Casa P-018</td>
-
-                    <td>
-                        <span class="ah-status ah-status-success ah-status-soft text-uppercase">Activo</span>
-                    </td>
-
-                    <td>
-
-                        <div class="d-flex gap-2">
-
-                            <button type="button" class="btn bg-light" aria-label="Ver a Roberto Pérez" title="Ver">
-                                <i class="bi bi-eye"></i>
-                            </button>
-
-                            <button type="button" class="btn bg-light" aria-label="Editar a Roberto Pérez" title="Editar">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-
-                <!-- INQUILINO 4 -->
-
-                <tr data-estado="inactivo">
-
-                    <td>
-                        <span class="ah-text-regular-negrita ah-text">Ana García</span>
-                    </td>
-
-                    <td>04564567-8</td>
-
-                    <td>7334-4567</td>
-
-                    <td>ana@email.com</td>
-
-                    <td>Sin propiedad</td>
-
-                    <td>
-                        <span class="ah-status ah-status-soft ah-status-soft text-uppercase">Inactivo</span>
-                    </td>
-
-                    <td>
-
-                        <div class="d-flex gap-2">
-
-                            <button type="button" class="btn bg-light" aria-label="Ver a Roberto Pérez" title="Ver">
-                                <i class="bi bi-eye"></i>
-                            </button>
-
-                            <button type="button" class="btn bg-light" aria-label="Editar a Roberto Pérez" title="Editar">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-
-                <!-- INQUILINO 5 -->
-
-                <tr data-estado="activo">
-
-                    <td>
-                        <span class="ah-text-regular-negrita ah-text">Roberto Pérez</span>
-                    </td>
-
-                    <td>03455678-9</td>
-
-                    <td>7445-5678</td>
-
-                    <td>roberto@email.com</td>
-
-                    <td>Apartamento P-024</td>
-
-                    <td>
-                        <span class="ah-status ah-status-success ah-status-soft text-uppercase">Activo</span>
-                    </td>
-
-                    <td>
-
-                        <div class="d-flex gap-2">
-
-                            <button type="button" class="btn bg-light" aria-label="Ver a Roberto Pérez" title="Ver">
-                                <i class="bi bi-eye"></i>
-                            </button>
-
-                            <button type="button" class="btn bg-light" aria-label="Editar a Roberto Pérez" title="Editar">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-
-                <!-- SIN RESULTADOS (se muestra solo al filtrar) -->
-
-                <tr id="sin-resultados" class="d-none">
-
-                    <td colspan="7" class="text-center py-4">
-                        No se encontraron inquilinos con esos criterios.
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
+{% if modo == 'ver' %}
+<div id="form-inquilino" class="ah-card overflow-hidden">
+{% else %}
+<form
+    id="form-inquilino"
+    method="POST"
+    action="{{ url_for('inquilinos.editar_inquilino', inquilino_id=inquilino_id) if modo == 'editar' else url_for('inquilinos.nuevo_inquilino') }}"
+    class="ah-card overflow-hidden"
+>
+
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{% endif %}
+
+    <section class="ah-form-section p-4">
+
+        <h2 class="ah-form-section-title">
+            Información personal
+        </h2>
+
+        <div class="row g-4">
+
+            <div class="col-12 col-md-6">
+                <label for="nombre" class="ah-form-label">Nombre *</label>
+                <input
+                    type="text"
+                    id="nombre"
+                    name="nombre"
+                    class="ah-form-control"
+                    placeholder="Ej. Juan"
+                    value="{{ form.get('nombre', '') }}"
+                    autocomplete="given-name"
+                    {% if modo == 'ver' %}readonly{% else %}required{% endif %}
+                >
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="apellido" class="ah-form-label">Apellido *</label>
+                <input
+                    type="text"
+                    id="apellido"
+                    name="apellido"
+                    class="ah-form-control"
+                    placeholder="Ej. Pérez"
+                    value="{{ form.get('apellido', '') }}"
+                    autocomplete="family-name"
+                    {% if modo == 'ver' %}readonly{% else %}required{% endif %}
+                >
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="dui" class="ah-form-label">DUI *</label>
+                <input
+                    type="text"
+                    id="dui"
+                    name="dui"
+                    class="ah-form-control"
+                    placeholder="Ej. 01234567-8"
+                    value="{{ form.get('dui', '') }}"
+                    inputmode="numeric"
+                    maxlength="10"
+                    pattern="[0-9]{8}-[0-9]"
+                    title="Formato del DUI: 8 dígitos, guion y 1 dígito (01234567-8)"
+                    {% if modo == 'ver' %}readonly{% else %}required{% endif %}
+                >
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="telefono" class="ah-form-label">Teléfono</label>
+                <input
+                    type="tel"
+                    id="telefono"
+                    name="telefono"
+                    class="ah-form-control"
+                    placeholder="Ej. 7000-1234"
+                    value="{{ form.get('telefono', '') }}"
+                    autocomplete="tel"
+                    {% if modo == 'ver' %}readonly{% endif %}
+                >
+            </div>
+
+            <div class="col-12">
+                <label for="correo" class="ah-form-label">Correo electrónico</label>
+                <input
+                    type="email"
+                    id="correo"
+                    name="correo"
+                    class="ah-form-control"
+                    placeholder="Ej. juan@email.com"
+                    value="{{ form.get('correo', '') }}"
+                    autocomplete="email"
+                    {% if modo == 'ver' %}readonly{% endif %}
+                >
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="ah-form-section p-4">
+
+        <h2 class="ah-form-section-title">
+            Información de alquiler
+        </h2>
+
+        <div class="ah-bg-background card my-4 border-0 p-3">
+            {% if modo != 'nuevo' and form.get('propiedad_texto') %}
+                <p class="ah-text-regular mb-0">
+                    Propiedad actual: <strong>{{ form.get('propiedad_texto') }}</strong>
+                </p>
+            {% else %}
+                <p class="ah-text-regular ah-text-secondary mb-0">
+                    La propiedad y las condiciones del alquiler se gestionan desde el módulo de Contratos.
+                </p>
+            {% endif %}
+        </div>
+
+    </section>
+
+{% if modo == 'ver' %}
 </div>
-
-
-<script>
-    // Filtra las filas por texto (nombre, DUI o correo) y por estado.
-    // Ignora mayúsculas y tildes. Cuando los datos vengan de la base de datos,
-    // esto se puede reemplazar por una búsqueda en el servidor.
-    (function () {
-        const buscador = document.getElementById('buscar-inquilino');
-        const filtro = document.getElementById('filtro-estado');
-        const filas = document.querySelectorAll('tbody tr[data-estado]');
-        const sinResultados = document.getElementById('sin-resultados');
-
-        function normalizar(texto) {
-            return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-        }
-
-        function filtrar() {
-            const texto = normalizar(buscador.value.trim());
-            const estado = filtro.value;
-            let visibles = 0;
-
-            filas.forEach(function (fila) {
-                const celdas = fila.cells;
-                const contenido = normalizar(
-                    celdas[0].textContent + ' ' + celdas[1].textContent + ' ' + celdas[3].textContent
-                );
-
-                const coincideTexto = contenido.includes(texto);
-                const coincideEstado = estado === 'todos' || fila.dataset.estado === estado;
-                const mostrar = coincideTexto && coincideEstado;
-
-                fila.classList.toggle('d-none', !mostrar);
-                if (mostrar) { visibles++; }
-            });
-
-            sinResultados.classList.toggle('d-none', visibles > 0);
-        }
-
-        buscador.addEventListener('input', filtrar);
-        filtro.addEventListener('change', filtrar);
-    })();
-</script>
-
+{% else %}
+</form>
+{% endif %}
 
 {% endblock %}

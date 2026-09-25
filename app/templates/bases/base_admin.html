@@ -96,7 +96,7 @@ AdminHaus - Panel administrativo
                 <li class="mb-2">
 
                     <a
-                        href="#"
+                        href="{{ url_for('inquilinos.inquilinos') }}"
                         class="
                             d-block
                             ah-text-white
@@ -104,7 +104,7 @@ AdminHaus - Panel administrativo
                             rounded
                             px-3
                             py-2
-                            {% if request.endpoint == 'inquilinos' %}
+                            {% if request.endpoint in ['inquilinos.inquilinos', 'inquilinos.nuevo_inquilino'] %}
                                 ah-bg-primary-hover
                             {% endif %}
                         "
