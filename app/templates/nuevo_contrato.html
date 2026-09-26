@@ -1,0 +1,267 @@
+{% extends "bases/base_admin.html" %}
+
+{% block title %}
+{% if modo == 'ver' %}Detalle del contrato{% elif modo == 'editar' %}Editar contrato{% else %}Nuevo contrato{% endif %} - AdminHaus
+{% endblock %}
+
+{% block content %}
+
+<!-- =========================================
+     ENCABEZADO
+     ========================================= -->
+<header class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+
+    <div>
+        <h1 class="ah-text-grande mb-0">
+            {% if modo == 'ver' %}
+                Detalle del contrato {{ form.get('codigo', '') }}
+            {% elif modo == 'editar' %}
+                Editar contrato {{ form.get('codigo', '') }}
+            {% else %}
+                Nuevo contrato
+            {% endif %}
+        </h1>
+
+        <p class="ah-text-subtitulos ah-text-secondary mb-0">
+            {% if modo == 'ver' %}
+                Información completa del contrato.
+            {% elif modo == 'editar' %}
+                Actualiza las condiciones del contrato de alquiler.
+            {% else %}
+                Registra las condiciones del contrato de alquiler.
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="d-flex gap-2">
+
+        <a
+            href="{{ url_for('contratos.contratos') }}"
+            class="ah-btn-secondary d-inline-block"
+        >
+            {{ 'Volver' if modo == 'ver' else 'Cancelar' }}
+        </a>
+
+        {% if modo != 'ver' %}
+        <button
+            type="submit"
+            form="form-contrato"
+            class="ah-btn-primary"
+        >
+            {{ 'Guardar cambios' if modo == 'editar' else 'Guardar contrato' }}
+        </button>
+        {% endif %}
+
+    </div>
+
+</header>
+
+
+{% if error %}
+    <div class="alert alert-danger mb-3" role="alert">
+        {{ error }}
+    </div>
+{% endif %}
+
+
+<!-- =========================================
+     FORMULARIO / DETALLE
+     ========================================= -->
+{% if modo == 'ver' %}
+<div id="form-contrato" class="ah-card overflow-hidden">
+{% else %}
+<form
+    id="form-contrato"
+    method="POST"
+    action="{{ url_for('contratos.editar_contrato', contrato_id=contrato_id) if modo == 'editar' else url_for('contratos.nuevo_contrato') }}"
+    class="ah-card overflow-hidden"
+>
+
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{% endif %}
+
+    <!-- =========================================
+         SECCIÓN 1: INFORMACIÓN DEL CONTRATO
+         ========================================= -->
+    <section class="ah-form-section p-4">
+
+        <h2 class="ah-form-section-title">
+            Información del contrato
+        </h2>
+
+        <div class="row g-4">
+
+            <div class="col-12 col-md-6">
+                <label for="propiedad_id" class="ah-form-label">Propiedad *</label>
+
+                {% if modo == 'ver' %}
+                <input type="text" class="ah-form-control" value="{{ form.get('propiedad_texto', '') }}" readonly>
+                {% else %}
+                <select id="propiedad_id" name="propiedad_id" class="ah-form-select" required>
+                    <option value="" disabled {% if not form.get('propiedad_id') %}selected{% endif %}>Seleccionar propiedad...</option>
+                    {% for propiedad in propiedades %}
+                    <option
+                        value="{{ propiedad.id }}"
+                        {% if form.get('propiedad_id')|string == propiedad.id|string %}selected{% endif %}
+                    >
+                        {{ propiedad.codigo }} — {{ propiedad.tipo.capitalize() }}
+                    </option>
+                    {% endfor %}
+                </select>
+                {% endif %}
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="inquilino_id" class="ah-form-label">Inquilino *</label>
+
+                {% if modo == 'ver' %}
+                <input type="text" class="ah-form-control" value="{{ form.get('inquilino_texto', '') }}" readonly>
+                {% else %}
+                <select id="inquilino_id" name="inquilino_id" class="ah-form-select" required>
+                    <option value="" disabled {% if not form.get('inquilino_id') %}selected{% endif %}>Seleccionar inquilino...</option>
+                    {% for inquilino in inquilinos %}
+                    <option
+                        value="{{ inquilino.id }}"
+                        {% if form.get('inquilino_id')|string == inquilino.id|string %}selected{% endif %}
+                    >
+                        {{ inquilino.nombre }} {{ inquilino.apellido }}
+                    </option>
+                    {% endfor %}
+                </select>
+                {% endif %}
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="fecha_inicio" class="ah-form-label">Fecha de inicio *</label>
+                <input
+                    type="date"
+                    id="fecha_inicio"
+                    name="fecha_inicio"
+                    class="ah-form-control"
+                    placeholder="Seleccionar fecha..."
+                    value="{{ form.get('fecha_inicio', '') }}"
+                    {% if modo == 'ver' %}readonly{% else %}required{% endif %}
+                >
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="fecha_fin" class="ah-form-label">Fecha de finalización *</label>
+                <input
+                    type="date"
+                    id="fecha_fin"
+                    name="fecha_fin"
+                    class="ah-form-control"
+                    placeholder="Seleccionar fecha..."
+                    value="{{ form.get('fecha_fin', '') }}"
+                    {% if modo == 'ver' %}readonly{% else %}required{% endif %}
+                >
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="estado" class="ah-form-label">Estado</label>
+
+                {% if modo == 'nuevo' %}
+                <!-- Un contrato siempre nace como VIGENTE (ACTIVO); no es editable al crear. -->
+                <select class="ah-form-select" disabled>
+                    <option selected>Vigente</option>
+                </select>
+                {% elif modo == 'ver' %}
+                <input
+                    type="text"
+                    class="ah-form-control"
+                    value="{{ {'ACTIVO': 'Vigente', 'FINALIZADO': 'Finalizado', 'CANCELADO': 'Cancelado'}[form.get('estado', 'ACTIVO')] }}"
+                    readonly
+                >
+                {% else %}
+                <select id="estado" name="estado" class="ah-form-select" required>
+                    <option value="ACTIVO" {% if form.get('estado') == 'ACTIVO' %}selected{% endif %}>Vigente</option>
+                    <option value="FINALIZADO" {% if form.get('estado') == 'FINALIZADO' %}selected{% endif %}>Finalizado</option>
+                    <option value="CANCELADO" {% if form.get('estado') == 'CANCELADO' %}selected{% endif %}>Cancelado</option>
+                </select>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         SECCIÓN 2: CONDICIONES DEL ALQUILER
+         ========================================= -->
+    <section class="ah-form-section p-4">
+
+        <h2 class="ah-form-section-title">
+            Condiciones del alquiler
+        </h2>
+
+        <div class="row g-4">
+
+            <div class="col-12 col-md-6">
+                <label for="monto_mensual" class="ah-form-label">Alquiler mensual *</label>
+                <input
+                    type="number"
+                    id="monto_mensual"
+                    name="monto_mensual"
+                    class="ah-form-control"
+                    placeholder="$0.00"
+                    step="0.01"
+                    min="0"
+                    value="{{ form.get('monto_mensual', '') }}"
+                    {% if modo == 'ver' %}readonly{% else %}required{% endif %}
+                >
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="deposito" class="ah-form-label">Depósito</label>
+                <input
+                    type="number"
+                    id="deposito"
+                    name="deposito"
+                    class="ah-form-control"
+                    placeholder="$0.00"
+                    step="0.01"
+                    min="0"
+                    value="{{ form.get('deposito', '') }}"
+                    {% if modo == 'ver' %}readonly{% endif %}
+                >
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="dia_pago" class="ah-form-label">Día de pago *</label>
+
+                {% if modo == 'ver' %}
+                <input type="text" class="ah-form-control" value="{{ form.get('dia_pago', '') }}" readonly>
+                {% else %}
+                <select id="dia_pago" name="dia_pago" class="ah-form-select" required>
+                    <option value="" disabled {% if not form.get('dia_pago') %}selected{% endif %}>Seleccionar día...</option>
+                    {% for dia in range(1, 32) %}
+                    <option
+                        value="{{ dia }}"
+                        {% if form.get('dia_pago')|string == dia|string %}selected{% endif %}
+                    >
+                        {{ dia }}
+                    </option>
+                    {% endfor %}
+                </select>
+                {% endif %}
+            </div>
+
+        </div>
+
+
+        <div class="ah-bg-background card my-4 border-0 p-3">
+            <p class="ah-text-regular ah-text-secondary mb-0">
+                El alquiler se registra y controla de forma mensual según las condiciones del contrato.
+            </p>
+        </div>
+
+    </section>
+
+{% if modo == 'ver' %}
+</div>
+{% else %}
+</form>
+{% endif %}
+
+{% endblock %}

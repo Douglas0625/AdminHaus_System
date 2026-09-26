@@ -1,0 +1,242 @@
+{% extends "bases/base_admin.html" %}
+
+{% block title %}
+Contratos - AdminHaus
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- =========================================
+     ENCABEZADO
+     ========================================= -->
+
+<header class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+
+    <div>
+
+        <h1 class="ah-text-grande mb-0">
+            Contratos
+        </h1>
+
+        <p class="ah-text-subtitulos ah-text-secondary mb-0">
+            Gestiona los contratos de alquiler de las propiedades administradas por AdminHaus.
+        </p>
+
+    </div>
+
+    <a
+        href="{{ url_for('contratos.nuevo_contrato') }}"
+        class="ah-btn-primary d-inline-block"
+    >
+        + Nuevo contrato
+    </a>
+
+</header>
+
+
+
+<!-- =========================================
+     BUSCADOR Y FILTRO
+     ========================================= -->
+
+<div class="d-flex flex-column flex-sm-row gap-2 mb-4">
+
+    <!-- BUSCADOR -->
+
+    <div class="ah-search flex-grow-1">
+
+        <input
+            type="search"
+            id="buscar-contrato"
+            class="ah-form-control"
+            placeholder="Buscar por contrato, propiedad o inquilino..."
+            aria-label="Buscar contratos por código, propiedad o inquilino"
+            autocomplete="off"
+        >
+
+    </div>
+
+
+    <!-- FILTRO POR ESTADO -->
+
+    <select
+        id="filtro-estado"
+        class="ah-form-select fw-medium w-auto"
+        style="min-width: 168px; max-height: 40px;"
+        aria-label="Filtrar por estado"
+    >
+        <option value="todos">Estado: Todos</option>
+        <option value="vigente">Vigente</option>
+        <option value="finalizado">Finalizado</option>
+        <option value="cancelado">Cancelado</option>
+    </select>
+
+</div>
+
+
+
+<!-- =========================================
+     TABLA DE CONTRATOS
+     ========================================= -->
+
+<div class="ah-table-container">
+
+    <div class="table-responsive">
+
+        <table class="ah-table" style="min-width: 960px;">
+
+            <caption class="visually-hidden">
+                Lista de contratos
+            </caption>
+
+            <colgroup>
+                <col style="width: 10%;">
+                <col style="width: 12%;">
+                <col style="width: 18%;">
+                <col style="width: 11%;">
+                <col style="width: 11%;">
+                <col style="width: 13%;">
+                <col style="width: 12%;">
+                <col style="width: 13%;">
+            </colgroup>
+
+            <thead>
+
+                <tr>
+                    <th scope="col">Contrato</th>
+                    <th scope="col">Propiedad</th>
+                    <th scope="col">Inquilino</th>
+                    <th scope="col">Inicio</th>
+                    <th scope="col">Fin</th>
+                    <th scope="col">Alquiler mensual</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for fila in filas %}
+
+                {% set estado_ui = {'ACTIVO': 'vigente', 'FINALIZADO': 'finalizado', 'CANCELADO': 'cancelado'}[fila.estado] %}
+
+                <tr data-estado="{{ estado_ui }}">
+
+                    <td>
+                        <span class="ah-text-regular-negrita ah-text">{{ fila.codigo }}</span>
+                    </td>
+
+                    <td>{{ fila.propiedad_codigo }}</td>
+
+                    <td>{{ fila.inquilino_texto }}</td>
+
+                    <td>{{ fila.fecha_inicio.strftime('%d/%m/%Y') }}</td>
+
+                    <td>{{ fila.fecha_fin.strftime('%d/%m/%Y') }}</td>
+
+                    <td>
+                        <span class="ah-text-regular-negrita">${{ '%.2f'|format(fila.monto_mensual) }}</span>
+                    </td>
+
+                    <td>
+                        {% if fila.estado == 'ACTIVO' %}
+                        <span class="ah-status ah-status-success ah-status-soft text-uppercase">Vigente</span>
+                        {% else %}
+                        <span class="ah-status ah-status-soft ah-status-soft text-uppercase">{{ fila.estado.capitalize() }}</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+
+                        <div class="d-flex gap-2">
+
+                            <a
+                                href="{{ url_for('contratos.ver_contrato', contrato_id=fila.id) }}"
+                                class="btn bg-light"
+                                aria-label="Ver contrato {{ fila.codigo }}"
+                                title="Ver"
+                            >
+                                <i class="bi bi-eye"></i>
+                            </a>
+
+                            <a
+                                href="{{ url_for('contratos.editar_contrato', contrato_id=fila.id) }}"
+                                class="btn bg-light"
+                                aria-label="Editar contrato {{ fila.codigo }}"
+                                title="Editar"
+                            >
+                                <i class="bi bi-pencil"></i>
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+
+                <!-- SIN RESULTADOS (se muestra solo al filtrar) -->
+
+                <tr id="sin-resultados" class="d-none">
+
+                    <td colspan="8" class="text-center py-4">
+                        No se encontraron contratos con esos criterios.
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<script>
+    // Filtra las filas por texto (contrato, propiedad o inquilino) y por estado.
+    (function () {
+        const buscador = document.getElementById('buscar-contrato');
+        const filtro = document.getElementById('filtro-estado');
+        const filas = document.querySelectorAll('tbody tr[data-estado]');
+        const sinResultados = document.getElementById('sin-resultados');
+
+        function normalizar(texto) {
+            return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        }
+
+        function filtrar() {
+            const texto = normalizar(buscador.value.trim());
+            const estado = filtro.value;
+            let visibles = 0;
+
+            filas.forEach(function (fila) {
+                const celdas = fila.cells;
+                const contenido = normalizar(
+                    celdas[0].textContent + ' ' + celdas[1].textContent + ' ' + celdas[2].textContent
+                );
+
+                const coincideTexto = contenido.includes(texto);
+                const coincideEstado = estado === 'todos' || fila.dataset.estado === estado;
+                const mostrar = coincideTexto && coincideEstado;
+
+                fila.classList.toggle('d-none', !mostrar);
+                if (mostrar) { visibles++; }
+            });
+
+            sinResultados.classList.toggle('d-none', visibles > 0);
+        }
+
+        buscador.addEventListener('input', filtrar);
+        filtro.addEventListener('change', filtrar);
+    })();
+</script>
+
+
+{% endblock %}

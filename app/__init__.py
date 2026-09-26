@@ -24,12 +24,15 @@ def create_app():
     from app.routes.dashboard import dashboard_bp
     from app.routes.propietarios import propietarios_bp
     from app.routes.inquilinos import inquilinos_bp
+    from app.routes.contratos import contratos_bp 
+
 
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(propietarios_bp)
     app.register_blueprint(inquilinos_bp)
+    app.register_blueprint(contratos_bp) 
 
     @app.route("/test-db")
     def test_db():

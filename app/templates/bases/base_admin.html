@@ -146,7 +146,7 @@ AdminHaus - Panel administrativo
                 <li class="mb-2">
 
                     <a
-                        href="#"
+                        href="{{ url_for('contratos.contratos') }}"
                         class="
                             d-block
                             ah-text-white
@@ -154,7 +154,7 @@ AdminHaus - Panel administrativo
                             rounded
                             px-3
                             py-2
-                            {% if request.endpoint == 'contratos' %}
+                            {% if request.endpoint in ['contratos.contratos', 'contratos.nuevo_contrato', 'contratos.ver_contrato', 'contratos.editar_contrato'] %}
                                 ah-bg-primary-hover
                             {% endif %}
                         "
