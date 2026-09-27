@@ -194,7 +194,7 @@ AdminHaus - Panel administrativo
                 <li class="mb-2">
 
                     <a
-                        href="#"
+                        href="{{ url_for('mantenimientos.mantenimientos') }}"
                         class="
                             d-block
                             ah-text-white
@@ -202,7 +202,7 @@ AdminHaus - Panel administrativo
                             rounded
                             px-3
                             py-2
-                            {% if request.endpoint == 'mantenimientos' %}
+                            {% if request.endpoint in ['mantenimientos.mantenimientos', 'mantenimientos.nueva_solicitud', 'mantenimientos.ver_mantenimiento', 'mantenimientos.editar_mantenimiento'] %}
                                 ah-bg-primary-hover
                             {% endif %}
                         "

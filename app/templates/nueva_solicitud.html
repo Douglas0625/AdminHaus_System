@@ -1,0 +1,219 @@
+{% extends "bases/base_admin.html" %}
+
+{% block title %}
+{% if modo == 'ver' %}Detalle de la solicitud{% elif modo == 'editar' %}Editar solicitud{% else %}Nueva solicitud de mantenimiento{% endif %} - AdminHaus
+{% endblock %}
+
+{% block content %}
+
+<!-- =========================================
+     ENCABEZADO
+     ========================================= -->
+<header class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+
+    <div>
+        <h1 class="ah-text-grande mb-0">
+            {% if modo == 'ver' %}
+                Detalle de la solicitud
+            {% elif modo == 'editar' %}
+                Editar solicitud de mantenimiento
+            {% else %}
+                Nueva solicitud de mantenimiento
+            {% endif %}
+        </h1>
+
+        <p class="ah-text-subtitulos ah-text-secondary mb-0">
+            {% if modo == 'ver' %}
+                Información completa de la solicitud.
+            {% elif modo == 'editar' %}
+                Actualiza la solicitud de mantenimiento.
+            {% else %}
+                Registra una nueva solicitud de mantenimiento para una propiedad.
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="d-flex gap-2">
+
+        <a
+            href="{{ url_for('mantenimientos.mantenimientos') }}"
+            class="ah-btn-secondary d-inline-block"
+        >
+            {{ 'Volver' if modo == 'ver' else 'Cancelar' }}
+        </a>
+
+        {% if modo != 'ver' %}
+        <button
+            type="submit"
+            form="form-mantenimiento"
+            class="ah-btn-primary"
+        >
+            {{ 'Guardar cambios' if modo == 'editar' else 'Guardar solicitud' }}
+        </button>
+        {% endif %}
+
+    </div>
+
+</header>
+
+
+{% if error %}
+    <div class="alert alert-danger mb-3" role="alert">
+        {{ error }}
+    </div>
+{% endif %}
+
+
+<!-- =========================================
+     FORMULARIO / DETALLE
+     ========================================= -->
+{% if modo == 'ver' %}
+<div id="form-mantenimiento" class="ah-card overflow-hidden p-4">
+{% else %}
+<form
+    id="form-mantenimiento"
+    method="POST"
+    action="{{ url_for('mantenimientos.editar_mantenimiento', mantenimiento_id=mantenimiento_id) if modo == 'editar' else url_for('mantenimientos.nueva_solicitud') }}"
+    class="ah-card overflow-hidden p-4"
+>
+
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{% endif %}
+
+    <div class="row g-4">
+
+        <div class="col-12 col-md-6">
+            <label for="propiedad_id" class="ah-form-label">Propiedad *</label>
+
+            {% if modo == 'ver' %}
+            <input type="text" class="ah-form-control" value="{{ form.get('propiedad_texto', '') }}" readonly>
+            {% else %}
+            <select id="propiedad_id" name="propiedad_id" class="ah-form-select" required>
+                <option value="" disabled {% if not form.get('propiedad_id') %}selected{% endif %}>Seleccionar propiedad...</option>
+                {% for propiedad in propiedades %}
+                <option
+                    value="{{ propiedad.id }}"
+                    {% if form.get('propiedad_id')|string == propiedad.id|string %}selected{% endif %}
+                >
+                    {{ propiedad.codigo }} — {{ propiedad.tipo.capitalize() }}
+                </option>
+                {% endfor %}
+            </select>
+            {% endif %}
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label for="categoria" class="ah-form-label">Categoría *</label>
+
+            {% if modo == 'ver' %}
+            <input type="text" class="ah-form-control" value="{{ form.get('categoria', '') }}" readonly>
+            {% else %}
+            <select id="categoria" name="categoria" class="ah-form-select" required>
+                <option value="" disabled {% if not form.get('categoria') %}selected{% endif %}>Seleccionar categoría...</option>
+                {% for opcion in ['Plomería', 'Electricidad', 'Jardinería', 'Aire acondicionado', 'Pintura', 'Cerrajería', 'Limpieza', 'Otro'] %}
+                <option value="{{ opcion }}" {% if form.get('categoria') == opcion %}selected{% endif %}>{{ opcion }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+        </div>
+
+        <div class="col-12">
+            <label for="descripcion" class="ah-form-label">Descripción *</label>
+            <textarea
+                id="descripcion"
+                name="descripcion"
+                class="ah-form-control"
+                rows="3"
+                placeholder="Describe el problema o la solicitud de mantenimiento..."
+                {% if modo == 'ver' %}readonly{% else %}required{% endif %}
+            >{{ form.get('descripcion', '') }}</textarea>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label for="proveedor_id" class="ah-form-label">Proveedor</label>
+
+            {% if modo == 'ver' %}
+            <input type="text" class="ah-form-control" value="{{ form.get('proveedor_texto', '') }}" readonly>
+            {% else %}
+            <select id="proveedor_id" name="proveedor_id" class="ah-form-select">
+                <option value="" {% if not form.get('proveedor_id') %}selected{% endif %}>Seleccionar proveedor...</option>
+                {% for proveedor in proveedores %}
+                <option
+                    value="{{ proveedor.id }}"
+                    {% if form.get('proveedor_id')|string == proveedor.id|string %}selected{% endif %}
+                >
+                    {{ proveedor.nombre }}
+                </option>
+                {% endfor %}
+            </select>
+            {% endif %}
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label for="fecha_solicitud" class="ah-form-label">Fecha de solicitud *</label>
+            <input
+                type="date"
+                id="fecha_solicitud"
+                name="fecha_solicitud"
+                class="ah-form-control"
+                value="{{ form.get('fecha_solicitud', '') }}"
+                {% if modo == 'ver' %}readonly{% else %}required{% endif %}
+            >
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label for="costo" class="ah-form-label">Costo</label>
+            <input
+                type="number"
+                id="costo"
+                name="costo"
+                class="ah-form-control"
+                placeholder="$0.00"
+                step="0.01"
+                min="0"
+                value="{{ form.get('costo', '') }}"
+                {% if modo == 'ver' %}readonly{% endif %}
+            >
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label for="estado" class="ah-form-label">Estado *</label>
+
+            {% if modo == 'ver' %}
+            <input
+                type="text"
+                class="ah-form-control"
+                value="{{ {'PENDIENTE': 'Pendiente', 'EN PROCESO': 'En proceso', 'RESUELTO': 'Resuelto', 'CANCELADO': 'Cancelado'}[form.get('estado', 'PENDIENTE')] }}"
+                readonly
+            >
+            {% else %}
+            <select id="estado" name="estado" class="ah-form-select" required>
+                <option value="PENDIENTE" {% if form.get('estado', 'PENDIENTE') == 'PENDIENTE' %}selected{% endif %}>Pendiente</option>
+                <option value="EN PROCESO" {% if form.get('estado') == 'EN PROCESO' %}selected{% endif %}>En proceso</option>
+                <option value="RESUELTO" {% if form.get('estado') == 'RESUELTO' %}selected{% endif %}>Resuelto</option>
+                <option value="CANCELADO" {% if form.get('estado') == 'CANCELADO' %}selected{% endif %}>Cancelado</option>
+            </select>
+            {% endif %}
+        </div>
+
+        <div class="col-12">
+            <label for="observaciones" class="ah-form-label">Observaciones</label>
+            <textarea
+                id="observaciones"
+                name="observaciones"
+                class="ah-form-control"
+                rows="3"
+                placeholder="Agrega observaciones adicionales (opcional)..."
+                {% if modo == 'ver' %}readonly{% endif %}
+            >{{ form.get('observaciones', '') }}</textarea>
+        </div>
+
+    </div>
+
+{% if modo == 'ver' %}
+</div>
+{% else %}
+</form>
+{% endif %}
+
+{% endblock %}
