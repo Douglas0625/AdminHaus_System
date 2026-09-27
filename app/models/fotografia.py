@@ -12,7 +12,10 @@ class Fotografia(db.Model):
 
     propiedad_id = db.Column(
         db.Integer,
-        db.ForeignKey("propiedad.id", ondelete="CASCADE"),
+        db.ForeignKey(
+            "propiedad.id",
+            ondelete="CASCADE"
+        ),
         nullable=False
     )
 

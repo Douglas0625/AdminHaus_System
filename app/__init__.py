@@ -25,7 +25,7 @@ def create_app():
     from app.routes.propietarios import propietarios_bp
     from app.routes.inquilinos import inquilinos_bp
     from app.routes.contratos import contratos_bp 
-    from app.routes.mantenimientos import mantenimientos_bp 
+    from app.routes.propiedades import propiedades_bp
 
 
 
@@ -34,7 +34,7 @@ def create_app():
     app.register_blueprint(propietarios_bp)
     app.register_blueprint(inquilinos_bp)
     app.register_blueprint(contratos_bp) 
-    app.register_blueprint(mantenimientos_bp)  
+    app.register_blueprint(propiedades_bp)
 
     @app.route("/test-db")
     def test_db():

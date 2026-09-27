@@ -1,0 +1,521 @@
+{% if session.get('rol') == 'ADMINISTRADOR' %}
+{% extends "bases/base_admin.html" %}
+{% elif session.get('rol') == 'GESTOR' %}
+{% extends "bases/base_gestor.html" %}
+{% else %}
+{% extends "bases/base_propietario.html" %}
+{% endif %}
+
+{% set es_propietario = session.get('rol') == 'PROPIETARIO' %}
+{% set solo_lectura = (modo == 'detalle') %}
+{% set valores = form if form else propiedad %}
+
+{% set url_volver = url_for('propiedades.mis_propiedades') if es_propietario else url_for('propiedades.lista') %}
+
+{% set departamentos_el_salvador = [
+    'Ahuachapán', 'Cabañas', 'Chalatenango', 'Cuscatlán', 'La Libertad',
+    'La Paz', 'La Unión', 'Morazán', 'San Miguel', 'San Salvador',
+    'San Vicente', 'Santa Ana', 'Sonsonate', 'Usulután'
+] %}
+
+{% block title %}
+{% if modo == 'editar' %}Editar propiedad
+{% elif modo == 'detalle' %}Detalle de propiedad
+{% else %}Nueva propiedad
+{% endif %} - AdminHaus
+{% endblock %}
+
+{% block content %}
+
+{% with mensajes = get_flashed_messages(with_categories=true) %}
+{% if mensajes %}
+<div class="mb-4">
+    {% for categoria, mensaje in mensajes %}
+    <div class="ah-alert-{{ categoria }}">{{ mensaje }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+{# En modo detalle el <form> no lleva method="POST": no hay botón
+   de envío ni se manda nada al servidor, solo se reutiliza la
+   misma estructura visual del formulario. #}
+<form {% if not solo_lectura %}method="POST"{% endif %}>
+
+    <!-- =========================================
+         ENCABEZADO
+         ========================================= -->
+
+    <header class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+
+        <div>
+            <h1 class="ah-text-grande mb-0">
+                {% if modo == 'editar' %}Editar propiedad
+                {% elif modo == 'detalle' %}Detalle de propiedad
+                {% else %}Nueva propiedad
+                {% endif %}
+            </h1>
+
+            <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                {% if modo == 'editar' %}Actualiza la información de la propiedad.
+                {% elif modo == 'detalle' %}Consulta la información completa de la propiedad.
+                {% else %}Registra la información de la propiedad.
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+
+            {% if solo_lectura %}
+
+                <a href="{{ url_volver }}" class="ah-btn-secondary d-inline-block">Volver</a>
+
+                {% if not es_propietario %}
+                <a
+                    href="{{ url_for('propiedades.editar', propiedad_id=propiedad.id) }}"
+                    class="ah-btn-primary d-inline-block"
+                >
+                    Editar
+                </a>
+                {% endif %}
+
+            {% else %}
+
+                <a href="{{ url_volver }}" class="ah-btn-secondary d-inline-block">Cancelar</a>
+
+                <button type="submit" class="ah-btn-primary">
+                    {% if modo == 'editar' %}Guardar cambios{% else %}Guardar propiedad{% endif %}
+                </button>
+
+            {% endif %}
+
+        </div>
+
+    </header>
+
+
+    {% if not solo_lectura %}
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% endif %}
+
+
+    <!-- =========================================
+         TARJETA DEL FORMULARIO
+         ========================================= -->
+
+    <div class="ah-card">
+
+        <!-- INFORMACIÓN GENERAL -->
+        <div class="ah-form-section">
+
+            <h2 class="ah-form-section-title mb-0">Información general</h2>
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+                    <label class="ah-form-label" for="codigo">Código *</label>
+                    {% if solo_lectura %}
+                    <input type="text" class="ah-form-control" value="{{ propiedad.codigo }}" readonly>
+                    {% else %}
+                    <input
+                        type="text" id="codigo" name="codigo" class="ah-form-control"
+                        placeholder="Ej. P-001"
+                        value="{{ valores.codigo if valores else '' }}"
+                        required
+                    >
+                    {% endif %}
+                </div>
+
+                <div class="w-100"></div>
+
+                <div class="col-md-6">
+                    <label class="ah-form-label" for="tipo">Tipo de propiedad *</label>
+                    {% if solo_lectura %}
+                    <input type="text" class="ah-form-control" value="{{ propiedad.tipo|capitalize }}" readonly>
+                    {% else %}
+                    {% set tipo_actual = valores.tipo if valores else '' %}
+                    <select id="tipo" name="tipo" class="ah-form-select" required>
+                        <option value="" disabled {% if not tipo_actual %}selected{% endif %}>Seleccionar...</option>
+                        <option value="CASA" {% if tipo_actual == 'CASA' %}selected{% endif %}>Casa</option>
+                        <option value="APARTAMENTO" {% if tipo_actual == 'APARTAMENTO' %}selected{% endif %}>Apartamento</option>
+                    </select>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="ah-form-label" for="propietario_id">Propietario *</label>
+                    {% if solo_lectura %}
+                    <input
+                        type="text" class="ah-form-control"
+                        value="{{ propiedad.propietario.nombre }} {{ propiedad.propietario.apellido }}"
+                        readonly
+                    >
+                    {% else %}
+                    {% set propietario_actual_id = (valores.propietario_id if valores and valores.propietario_id else (propiedad.propietario_id if propiedad else None)) %}
+                    <select id="propietario_id" name="propietario_id" class="ah-form-select" required>
+                        <option value="" disabled {% if not propietario_actual_id %}selected{% endif %}>Seleccionar propietario...</option>
+                        {% for propietario in propietarios %}
+                        <option
+                            value="{{ propietario.id }}"
+                            {% if propietario_actual_id|string == propietario.id|string %}selected{% endif %}
+                        >
+                            {{ propietario.nombre }} {{ propietario.apellido }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-4">
+                    <label class="ah-form-label" for="estado">Estado</label>
+                    {% if solo_lectura %}
+                    <input type="text" class="ah-form-control" value="{{ propiedad.estado|capitalize }}" readonly>
+                    {% else %}
+                    {% set estado_actual = valores.estado if valores and valores.estado else 'DISPONIBLE' %}
+                    <select id="estado" name="estado" class="ah-form-select">
+                        <option value="DISPONIBLE" {% if estado_actual == 'DISPONIBLE' %}selected{% endif %}>Disponible</option>
+                        <option value="ALQUILADA" {% if estado_actual == 'ALQUILADA' %}selected{% endif %}>Alquilada</option>
+                        <option value="INACTIVA" {% if estado_actual == 'INACTIVA' %}selected{% endif %}>Inactiva</option>
+                    </select>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- CARACTERÍSTICAS -->
+        <div class="ah-form-section">
+
+            <h2 class="ah-form-section-title mb-0">Características</h2>
+
+            <div class="row g-3">
+
+                <div class="col-6 col-md-3">
+                    <label class="ah-form-label" for="habitaciones">Habitaciones</label>
+                    <input
+                        type="{{ 'text' if solo_lectura else 'number' }}" min="0"
+                        id="habitaciones" name="habitaciones" class="ah-form-control"
+                        placeholder="Ej. 3"
+                        value="{{ valores.habitaciones if valores and valores.habitaciones is not none else 0 }}"
+                        {{ 'readonly' if solo_lectura }}
+                    >
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <label class="ah-form-label" for="banos">Baños</label>
+                    <input
+                        type="{{ 'text' if solo_lectura else 'number' }}" min="0"
+                        id="banos" name="banos" class="ah-form-control"
+                        placeholder="Ej. 2"
+                        value="{{ valores.banos if valores and valores.banos is not none else 0 }}"
+                        {{ 'readonly' if solo_lectura }}
+                    >
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <label class="ah-form-label" for="parqueos">Parqueos</label>
+                    <input
+                        type="{{ 'text' if solo_lectura else 'number' }}" min="0"
+                        id="parqueos" name="parqueos" class="ah-form-control"
+                        placeholder="Ej. 1"
+                        value="{{ valores.parqueos if valores and valores.parqueos is not none else 0 }}"
+                        {{ 'readonly' if solo_lectura }}
+                    >
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <label class="ah-form-label" for="metros_cuadrados">Metros cuadrados</label>
+                    <input
+                        type="{{ 'text' if solo_lectura else 'number' }}" min="0" step="0.01"
+                        id="metros_cuadrados" name="metros_cuadrados" class="ah-form-control"
+                        placeholder="Ej. 120"
+                        value="{{ valores.metros_cuadrados if valores and valores.metros_cuadrados else '' }}"
+                        {{ 'readonly' if solo_lectura }}
+                    >
+                </div>
+
+                <div class="col-md-4">
+                    <label class="ah-form-label" for="precio_alquiler">Precio de alquiler *</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white ah-text-secondary">$</span>
+                        <input
+                            type="{{ 'text' if solo_lectura else 'number' }}" min="0" step="0.01"
+                            id="precio_alquiler" name="precio_alquiler" class="ah-form-control"
+                            placeholder="Ej. 500.00"
+                            value="{{ valores.precio_alquiler if valores and valores.precio_alquiler is not none else '' }}"
+                            {{ 'readonly' if solo_lectura }}
+                            {{ 'required' if not solo_lectura }}
+                        >
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- UBICACIÓN -->
+        <div class="ah-form-section">
+
+            <h2 class="ah-form-section-title mb-0">Ubicación</h2>
+
+            <div class="row g-3">
+
+                <div class="col-md-7">
+                    <label class="ah-form-label" for="direccion">Dirección *</label>
+                    <input
+                        type="text" id="direccion" name="direccion" class="ah-form-control"
+                        placeholder="Ej. Avenida Independencia #24"
+                        value="{{ valores.direccion if valores else '' }}"
+                        {{ 'readonly' if solo_lectura else 'required' }}
+                    >
+                </div>
+
+                <div class="col-md-5">
+                    <label class="ah-form-label" for="municipio">Municipio *</label>
+                    <input
+                        type="text" id="municipio" name="municipio" class="ah-form-control"
+                        placeholder="Ej. Santa Ana"
+                        value="{{ valores.municipio if valores else '' }}"
+                        {{ 'readonly' if solo_lectura else 'required' }}
+                    >
+                </div>
+
+                <div class="col-md-5">
+                    <label class="ah-form-label" for="departamento">Departamento *</label>
+                    {% if solo_lectura %}
+                    <input type="text" class="ah-form-control" value="{{ propiedad.departamento }}" readonly>
+                    {% else %}
+                    {% set departamento_actual = valores.departamento if valores else '' %}
+                    <select id="departamento" name="departamento" class="ah-form-select" required>
+                        <option value="" disabled {% if not departamento_actual %}selected{% endif %}>Seleccionar...</option>
+                        {% for depto in departamentos_el_salvador %}
+                        <option value="{{ depto }}" {% if departamento_actual == depto %}selected{% endif %}>{{ depto }}</option>
+                        {% endfor %}
+                    </select>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- INFORMACIÓN ADICIONAL -->
+        <div class="ah-form-section">
+
+            <h2 class="ah-form-section-title mb-0">Información adicional</h2>
+
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="ah-form-label" for="descripcion">Descripción</label>
+                    <textarea
+                        id="descripcion" name="descripcion" class="ah-form-control" rows="3"
+                        placeholder="Detalles adicionales sobre la propiedad..."
+                        {{ 'readonly' if solo_lectura }}
+                    >{{ valores.descripcion if valores and valores.descripcion else '' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- FOTOGRAFÍAS -->
+        <div class="ah-form-section">
+
+            <h2 class="ah-form-section-title mb-0">Fotografías</h2>
+
+            {% if solo_lectura %}
+
+                <div class="row g-3">
+                    {% for foto in propiedad.fotografias %}
+                    <div class="col-6 col-md-3">
+                        <div class="ah-photo-thumb-wrapper">
+                            <img
+                                src="{{ foto.ruta }}"
+                                class="ah-photo-thumb"
+                                alt="Fotografía de la propiedad {{ propiedad.codigo }}"
+                                onerror="this.parentElement.classList.add('ah-photo-thumb-error')"
+                            >
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-12">
+                        <p class="ah-text-secondary mb-0">Sin fotografías registradas.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            {% else %}
+
+                <!-- Las fotografías se guardan como URL externa (la BD
+                     almacena el enlace que ingresa el usuario, no un
+                     archivo subido). -->
+
+                <div class="ah-photo-dropzone">
+                    <span class="ah-text-regular ah-text-secondary">
+                        Agrega fotografías mediante un enlace (URL) de una imagen ya alojada en internet.
+                    </span>
+                    <button
+                        type="button"
+                        class="ah-btn-secondary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalFotografia"
+                    >
+                        Agregar fotografías
+                    </button>
+                </div>
+
+                <div id="fotos-grid" class="row g-3 mt-1">
+                    {% if propiedad and propiedad.fotografias %}
+                    {% for foto in propiedad.fotografias %}
+                    <div class="col-6 col-md-3">
+                        <div class="ah-photo-thumb-wrapper">
+                            <img
+                                src="{{ foto.ruta }}"
+                                class="ah-photo-thumb"
+                                alt="Fotografía de la propiedad"
+                                onerror="this.parentElement.classList.add('ah-photo-thumb-error')"
+                            >
+                        </div>
+                        <div class="form-check mt-1">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="fotos_eliminar"
+                                value="{{ foto.id }}"
+                                id="foto-elim-{{ foto.id }}"
+                            >
+                            <label class="form-check-label ah-text-secondary small" for="foto-elim-{{ foto.id }}">
+                                Eliminar
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    {% if not solo_lectura %}
+
+    <!-- =========================================
+         MODAL: AGREGAR FOTOGRAFÍA POR URL
+         ========================================= -->
+
+    <div class="modal fade" id="modalFotografia" tabindex="-1" aria-labelledby="modalFotografiaTitulo" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h2 class="ah-text-titulos-2 mb-0" id="modalFotografiaTitulo">Agregar fotografía</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+
+                <div class="modal-body">
+                    <label class="ah-form-label" for="input-foto-url">URL de la imagen</label>
+                    <input
+                        type="url"
+                        id="input-foto-url"
+                        class="ah-form-control"
+                        placeholder="https://ejemplo.com/imagen.jpg"
+                    >
+                    <div id="error-foto-url" class="mt-2 d-none" style="color: var(--danger); font-size: 13px;">
+                        Ingresa una URL válida que inicie con http:// o https://.
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="ah-btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="ah-btn-primary" id="btn-agregar-foto-url">Agregar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+{% if not solo_lectura %}
+<script>
+    // Modal mínimo para agregar fotografías por URL externa.
+    // No sube archivos: cada URL agregada se guarda como un
+    // <input type="hidden" name="fotos_url"> dentro del mismo
+    // formulario, y el backend la guarda tal cual en 'fotografia.ruta'
+    // al enviar el formulario (crear_propiedad no hace falta tocarlo).
+    (function () {
+        var modalEl = document.getElementById('modalFotografia');
+        var input = document.getElementById('input-foto-url');
+        var error = document.getElementById('error-foto-url');
+        var btnAgregar = document.getElementById('btn-agregar-foto-url');
+        var grid = document.getElementById('fotos-grid');
+
+        if (!modalEl || !btnAgregar) {
+            return;
+        }
+
+        function esUrlValida(valor) {
+            return /^https?:\/\/.+/i.test(valor.trim());
+        }
+
+        function escaparAtributo(valor) {
+            var div = document.createElement('div');
+            div.textContent = valor;
+            return div.innerHTML;
+        }
+
+        btnAgregar.addEventListener('click', function () {
+            var url = input.value.trim();
+
+            if (!esUrlValida(url)) {
+                error.classList.remove('d-none');
+                return;
+            }
+
+            error.classList.add('d-none');
+
+            var urlSegura = escaparAtributo(url);
+
+            var col = document.createElement('div');
+            col.className = 'col-6 col-md-3';
+            col.innerHTML =
+                '<div class="ah-photo-thumb-wrapper">' +
+                    '<img src="' + urlSegura + '" class="ah-photo-thumb" alt="Nueva fotografía" ' +
+                        'onerror="this.parentElement.classList.add(\'ah-photo-thumb-error\')">' +
+                    '<button type="button" class="ah-photo-thumb-remove" aria-label="Quitar fotografía">&times;</button>' +
+                '</div>' +
+                '<input type="hidden" name="fotos_url" value="' + urlSegura + '">';
+
+            col.querySelector('.ah-photo-thumb-remove').addEventListener('click', function () {
+                col.remove();
+            });
+
+            grid.appendChild(col);
+            input.value = '';
+
+            var modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) {
+                modal.hide();
+            }
+        });
+
+        modalEl.addEventListener('shown.bs.modal', function () {
+            input.focus();
+        });
+
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            input.value = '';
+            error.classList.add('d-none');
+        });
+    })();
+</script>
+{% endif %}
+{% endblock %}

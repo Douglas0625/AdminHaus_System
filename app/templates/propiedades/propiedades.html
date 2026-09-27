@@ -1,0 +1,169 @@
+{% if session.get('rol') == 'ADMINISTRADOR' %}
+{% extends "bases/base_admin.html" %}
+{% elif session.get('rol') == 'GESTOR' %}
+{% extends "bases/base_gestor.html" %}
+{% else %}
+{% extends "bases/base_propietario.html" %}
+{% endif %}
+
+{% set es_propietario = session.get('rol') == 'PROPIETARIO' %}
+
+{% block title %}
+{% if es_propietario %}Mis propiedades{% else %}Propiedades{% endif %} - AdminHaus
+{% endblock %}
+
+{% block content %}
+
+{% with mensajes = get_flashed_messages(with_categories=true) %}
+{% if mensajes %}
+<div class="mb-4">
+    {% for categoria, mensaje in mensajes %}
+    <div class="ah-alert-{{ categoria }}">{{ mensaje }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<!-- =========================================
+     ENCABEZADO
+     ========================================= -->
+
+<header class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+
+    <div>
+        <h1 class="ah-text-grande mb-0">
+            {% if es_propietario %}Mis propiedades{% else %}Propiedades{% endif %}
+        </h1>
+
+        <p class="ah-text-subtitulos ah-text-secondary mb-0">
+            {% if es_propietario %}
+                Consulta la información de tus propiedades registradas.
+            {% else %}
+                Gestiona las propiedades residenciales administradas por AdminHaus.
+            {% endif %}
+        </p>
+    </div>
+
+    {% if not es_propietario %}
+    <a href="{{ url_for('propiedades.nueva') }}" class="ah-btn-primary d-inline-block">
+        + Nueva propiedad
+    </a>
+    {% endif %}
+
+</header>
+
+
+<!-- =========================================
+     BUSCADOR Y FILTROS
+     (la búsqueda/filtrado se resuelve en el servidor,
+     vía propiedad_service; este formulario solo recarga
+     la página con los parámetros en la URL)
+     ========================================= -->
+
+<form
+    method="GET"
+    action="{{ url_for('propiedades.mis_propiedades') if es_propietario else url_for('propiedades.lista') }}"
+    class="d-flex flex-column flex-sm-row gap-2 mb-4"
+>
+    <div class="ah-search flex-grow-1">
+        <i class="bi bi-search ah-search-icon"></i>
+        <input
+            type="search"
+            name="buscar"
+            class="ah-form-control"
+            placeholder="Buscar por código, dirección o municipio..."
+            value="{{ buscar }}"
+            autocomplete="off"
+        >
+    </div>
+
+    <select name="tipo" class="ah-form-select fw-medium w-auto" onchange="this.form.submit()">
+        <option value="todos" {% if tipo == 'todos' %}selected{% endif %}>Tipo: Todos</option>
+        <option value="CASA" {% if tipo == 'CASA' %}selected{% endif %}>Casa</option>
+        <option value="APARTAMENTO" {% if tipo == 'APARTAMENTO' %}selected{% endif %}>Apartamento</option>
+    </select>
+
+    <select name="estado" class="ah-form-select fw-medium w-auto" onchange="this.form.submit()">
+        <option value="todos" {% if estado == 'todos' %}selected{% endif %}>Estado: Todos</option>
+        <option value="DISPONIBLE" {% if estado == 'DISPONIBLE' %}selected{% endif %}>Disponible</option>
+        <option value="ALQUILADA" {% if estado == 'ALQUILADA' %}selected{% endif %}>Alquilada</option>
+        <option value="INACTIVA" {% if estado == 'INACTIVA' %}selected{% endif %}>Inactiva</option>
+    </select>
+
+    <noscript><button type="submit" class="ah-btn-secondary">Filtrar</button></noscript>
+</form>
+
+
+<!-- =========================================
+     TABLA DE PROPIEDADES
+     ========================================= -->
+
+<div class="ah-table-container">
+    <div class="table-responsive">
+        <table class="ah-table">
+
+            <caption class="visually-hidden">Lista de propiedades</caption>
+
+            <thead>
+                <tr>
+                    <th scope="col">Propiedad</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Ubicación</th>
+                    <th scope="col">Propietario</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for propiedad in propiedades %}
+                <tr>
+                    <td class="ah-text-regular-negrita ah-text">{{ propiedad.codigo }}</td>
+                    <td>{{ propiedad.tipo|capitalize }}</td>
+                    <td>{{ propiedad.municipio }}</td>
+                    <td>{{ propiedad.propietario.nombre }} {{ propiedad.propietario.apellido }}</td>
+                    <td>
+                        {% if propiedad.estado == 'INACTIVA' %}
+                        <span class="ah-status ah-status-soft text-uppercase">Inactiva</span>
+                        {% else %}
+                        <span class="ah-status ah-status-success">{{ propiedad.estado|capitalize }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a
+                                href="{{ url_for('propiedades.detalle', propiedad_id=propiedad.id) }}"
+                                class="btn bg-light"
+                                aria-label="Ver propiedad {{ propiedad.codigo }}"
+                                title="Ver"
+                            >
+                                <i class="bi bi-eye"></i>
+                            </a>
+
+                            {% if not es_propietario %}
+                            <a
+                                href="{{ url_for('propiedades.editar', propiedad_id=propiedad.id) }}"
+                                class="btn bg-light"
+                                aria-label="Editar propiedad {{ propiedad.codigo }}"
+                                title="Editar"
+                            >
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-4 ah-text-secondary">
+                        No se encontraron propiedades con esos criterios.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+{% endblock %}

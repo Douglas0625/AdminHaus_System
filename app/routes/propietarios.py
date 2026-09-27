@@ -77,7 +77,7 @@ def lista():
         ]
 
     return render_template(
-        "propietarios.html",
+        "propietarios/propietarios.html",
         propietarios=propietarios,
         buscar=buscar,
         estado=estado
@@ -101,7 +101,7 @@ def detalle(propietario_id):
         return "Propietario no encontrado.", 404
 
     return render_template(
-        "nuevo_propietario.html",
+        "propietarios/detalle_propietario.html",
         propietario=propietario,
         modo="detalle"  
     )
@@ -127,7 +127,7 @@ def nuevo():
         if not nombre or not apellido or not dui:
             flash("Nombre, apellido y DUI son obligatorios.", "danger")
             return render_template(
-                "nuevo_propietario.html",
+                "propietarios/nuevo_propietario.html",
                 propietario=None,
                 form=request.form
             )
@@ -138,7 +138,7 @@ def nuevo():
                 "danger"
             )
             return render_template(
-                "nuevo_propietario.html",
+                "propietarios/nuevo_propietario.html",
                 propietario=None,
                 form=request.form
             )
@@ -147,7 +147,7 @@ def nuevo():
         if Propietario.query.filter_by(dui=dui).first():
             flash("Ya existe un propietario con ese DUI.", "danger")
             return render_template(
-                "nuevo_propietario.html",
+                "propietarios/nuevo_propietario.html",
                 propietario=None,
                 form=request.form
             )
@@ -156,7 +156,7 @@ def nuevo():
         if Usuario.query.filter_by(username=username).first():
             flash("Ese nombre de usuario ya existe.", "danger")
             return render_template(
-                "nuevo_propietario.html",
+                "propietarios/nuevo_propietario.html",
                 propietario=None,
                 form=request.form
             )
@@ -201,13 +201,13 @@ def nuevo():
             )
 
             return render_template(
-                "nuevo_propietario.html",
+                "propietarios/nuevo_propietario.html",
                 propietario=None,
                 form=request.form
             )
 
     return render_template(
-        "nuevo_propietario.html",
+        "propietarios/nuevo_propietario.html",
         propietario=None,
         form=None
     )
@@ -241,7 +241,7 @@ def editar(propietario_id):
     if request.method == "GET":
 
         return render_template(
-            "nuevo_propietario.html",
+            "propietarios/nuevo_propietario.html",
             propietario=propietario
         )
 
@@ -298,7 +298,7 @@ def editar(propietario_id):
         )
 
         return render_template(
-            "nuevo_propietario.html",
+            "propietarios/nuevo_propietario.html",
             propietario=propietario
         )
 
@@ -311,7 +311,7 @@ def editar(propietario_id):
         )
 
         return render_template(
-            "nuevo_propietario.html",
+            "propietarios/nuevo_propietario.html",
             propietario=propietario
         )
 
@@ -333,7 +333,7 @@ def editar(propietario_id):
         )
 
         return render_template(
-            "nuevo_propietario.html",
+            "propietarios/nuevo_propietario.html",
             propietario=propietario
         )
 
@@ -359,7 +359,7 @@ def editar(propietario_id):
         )
 
         return render_template(
-            "nuevo_propietario.html",
+            "propietarios/nuevo_propietario.html",
             propietario=propietario
         )
 
@@ -434,7 +434,7 @@ def editar(propietario_id):
         )
 
         return render_template(
-            "nuevo_propietario.html",
+            "propietarios/nuevo_propietario.html",
             propietario=propietario
         )
 

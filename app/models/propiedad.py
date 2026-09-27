@@ -1,5 +1,10 @@
 from app import db
 
+# Se importa aquí para que SQLAlchemy pueda resolver la cadena
+# "Fotografia" usada en la relación de más abajo: en el proyecto
+# original ningún módulo importaba este modelo todavía.
+from app.models.fotografia import Fotografia  # noqa: F401
+
 
 class Propiedad(db.Model):
 
@@ -75,8 +80,22 @@ class Propiedad(db.Model):
 
     propietario_id = db.Column(
         db.Integer,
-        db.ForeignKey("propietario.id", ondelete="RESTRICT"),
+        db.ForeignKey(
+            "propietario.id",
+            ondelete="RESTRICT"
+        ),
         nullable=False
+    )
+
+    propietario = db.relationship(
+        "Propietario",
+        backref="propiedades"
+    )
+
+    fotografias = db.relationship(
+        "Fotografia",
+        backref="propiedad",
+        cascade="all, delete-orphan"
     )
 
     __table_args__ = (
