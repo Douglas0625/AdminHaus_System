@@ -1,10 +1,8 @@
 {% extends "bases/base.html" %}
 
-
 {% block title %}
-AdminHaus - Panel del propietario
+    AdminHaus - Panel del propietario
 {% endblock %}
-
 
 {% block sidebar %}
 
@@ -14,28 +12,22 @@ AdminHaus - Panel del propietario
 
         <!-- LOGO -->
         <div class="d-flex justify-content-center pt-3 mb-2">
-
             <img
                 src="{{ url_for('static', filename='media/logo_oscuro-Photoroom.png') }}"
                 alt="AdminHaus"
-                class="img-fluid"
-                style="width: 190px;"
+                class="img-fluid w-75"
             >
-
         </div>
 
-
         <!-- DESCRIPCIÓN -->
-        <p class="ah-text-peque ah-text-secondary px-3 mb-4 pb-2">
+        <p class="ah-text-subtitulos ah-text-white mb-4">
             Panel del propietario
         </p>
-
 
         <!-- ROL -->
         <p class="ah-text-peque ah-text-secondary text-uppercase mb-2">
             Propietario
         </p>
-
 
         <!-- MENÚ -->
         <nav aria-label="Menú del propietario">
@@ -53,6 +45,7 @@ AdminHaus - Panel del propietario
                             rounded
                             px-3
                             py-2
+                            text-decoration-none
                             {% if request.endpoint == 'dashboard.dashboard_propietario' %}
                                 ah-bg-primary-hover
                             {% endif %}
@@ -65,88 +58,113 @@ AdminHaus - Panel del propietario
                     </a>
                 </li>
 
-
                 <!-- MIS PROPIEDADES -->
                 <li class="mb-2">
-
                     <a
-                        href="#"
-                        class="ah-sidebar-link"
+                        href="{{ url_for('propiedades.mis_propiedades') }}"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            text-decoration-none
+                            {% if request.endpoint == 'propiedades.mis_propiedades' %}
+                                ah-bg-primary-hover
+                            {% endif %}
+                        "
+                        {% if request.endpoint == 'propiedades.mis_propiedades' %}
+                            aria-current="page"
+                        {% endif %}
                     >
-                        <i class="bi bi-house-door me-2"></i>
                         Mis propiedades
                     </a>
-
                 </li>
-
 
                 <!-- CONTRATOS -->
                 <li class="mb-2">
-
                     <a
                         href="#"
-                        class="ah-sidebar-link"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            text-decoration-none
+                        "
                     >
-                        <i class="bi bi-file-earmark-text me-2"></i>
                         Contratos
                     </a>
-
                 </li>
-
 
                 <!-- PAGOS -->
                 <li class="mb-2">
-
                     <a
                         href="#"
-                        class="ah-sidebar-link"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            text-decoration-none
+                        "
                     >
-                        <i class="bi bi-cash-stack me-2"></i>
                         Pagos
                     </a>
-
                 </li>
-
 
                 <!-- MANTENIMIENTOS -->
                 <li class="mb-2">
-
                     <a
                         href="#"
-                        class="ah-sidebar-link"
+                        class="
+                            d-block
+                            ah-text-white
+                            ah-text-regular-negrita
+                            rounded
+                            px-3
+                            py-2
+                            text-decoration-none
+                        "
                     >
-                        <i class="bi bi-tools me-2"></i>
                         Mantenimientos
                     </a>
-
                 </li>
 
             </ul>
 
         </nav>
 
-
-        <!-- USUARIO / CERRAR SESIÓN -->
+        <!-- SESIÓN -->
         <div class="mt-auto pt-4">
 
-            <div class="border-top border-secondary pt-3 mb-3">
+            <div class="ah-divider mb-3"></div>
 
-                <p class="ah-text-peque ah-text-secondary mb-1">
-                    Sesión iniciada como
-                </p>
+            <p class="ah-text-peque ah-text-secondary mb-1">
+                Sesión iniciada como
+            </p>
 
-                <p class="ah-text-regular-negrita ah-text-white mb-0">
-                    {{ session.get('username', 'Propietario') }}
-                </p>
-
-            </div>
-
+            <p class="ah-text-regular-negrita ah-text-white mb-3">
+                {{ session.get('username', 'Propietario') }}
+            </p>
 
             <a
                 href="{{ url_for('auth.logout') }}"
-                class="ah-sidebar-link"
+                class="
+                    d-block
+                    ah-text-white
+                    ah-text-regular-negrita
+                    rounded
+                    px-3
+                    py-2
+                    text-decoration-none
+                "
             >
-                <i class="bi bi-box-arrow-right me-2"></i>
                 Cerrar sesión
             </a>
 

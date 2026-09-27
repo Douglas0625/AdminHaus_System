@@ -98,7 +98,7 @@ AdminHaus - Panel administrativo
                 <!-- PROPIEDADES -->
                 <li class="mb-2">
                     <a
-                        href="#"
+                        href="{{ url_for('propiedades.lista') }}"
                         class="
                             d-block
                             ah-text-white
@@ -106,6 +106,9 @@ AdminHaus - Panel administrativo
                             rounded
                             px-3
                             py-2
+                            {% if request.endpoint in ['propiedades.lista', 'propiedades.detalle', 'propiedades.nueva', 'propiedades.editar'] %}
+                                ah-bg-primary-hover
+                            {% endif %}
                         "
                     >
                         Propiedades
