@@ -3,16 +3,18 @@ from sqlalchemy import text
 from app import db
 
 
-def obtener_contratos(buscar="", estado="todos"):
+def obtener_contratos(buscar="", estado="todos", usuario_id_propietario=None):
     """
     Obtiene los contratos junto con el código de la propiedad
     y el nombre del inquilino, para la pantalla de Contratos.
+
+    Si 'usuario_id_propietario' viene con un valor, solo se
+    devuelven los contratos de propiedades que pertenecen a ese
+    usuario (rol PROPIETARIO). Si es None (admin/gestor), no se filtra.
     """
 
     patron = f"%{buscar}%"
 
-    # 'todos' en la UI no filtra; los demás valores se traducen
-    # al estado real que se guarda en la base de datos.
     mapa_estado = {
         "vigente": "ACTIVO",
         "finalizado": "FINALIZADO",
@@ -36,6 +38,8 @@ def obtener_contratos(buscar="", estado="todos"):
                 ON contrato.propiedad_id = propiedad.id
             INNER JOIN inquilino
                 ON contrato.inquilino_id = inquilino.id
+            LEFT JOIN propietario
+                ON propiedad.propietario_id = propietario.id
             WHERE (
                 :buscar = ''
                 OR propiedad.codigo ILIKE :patron
@@ -46,12 +50,17 @@ def obtener_contratos(buscar="", estado="todos"):
                 CAST(:estado_bd AS text) IS NULL
                 OR contrato.estado = CAST(:estado_bd AS text)
             )
+            AND (
+                CAST(:usuario_id_propietario AS integer) IS NULL
+                OR propietario.usuario_id = CAST(:usuario_id_propietario AS integer)
+            )
             ORDER BY contrato.id
         """),
         {
             "buscar": buscar,
             "patron": patron,
             "estado_bd": estado_bd,
+            "usuario_id_propietario": usuario_id_propietario,
         }
     ).mappings().all()
 
@@ -70,7 +79,6 @@ def obtener_contratos(buscar="", estado="todos"):
         })
 
     return filas_resultado
-
 
 def obtener_propiedades_para_select():
     """

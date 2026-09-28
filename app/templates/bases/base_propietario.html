@@ -85,7 +85,7 @@
                 <!-- CONTRATOS -->
                 <li class="mb-2">
                     <a
-                        href="#"
+                        href="{{ url_for('contratos.contratos') }}"
                         class="
                             d-block
                             ah-text-white
@@ -94,6 +94,9 @@
                             px-3
                             py-2
                             text-decoration-none
+                            {% if request.endpoint in ['contratos.contratos', 'contratos.ver_contrato'] %}
+                                ah-bg-primary-hover
+                            {% endif %}
                         "
                     >
                         Contratos
@@ -121,7 +124,7 @@
                 <!-- MANTENIMIENTOS -->
                 <li class="mb-2">
                     <a
-                        href="#"
+                        href="{{ url_for('mantenimientos.mantenimientos') }}"
                         class="
                             d-block
                             ah-text-white
@@ -129,7 +132,9 @@
                             rounded
                             px-3
                             py-2
-                            text-decoration-none
+                            {% if request.endpoint in ['mantenimientos.mantenimientos', 'mantenimientos.nueva_solicitud', 'mantenimientos.ver_mantenimiento', 'mantenimientos.editar_mantenimiento'] %}
+                                ah-bg-primary-hover
+                            {% endif %}
                         "
                     >
                         Mantenimientos

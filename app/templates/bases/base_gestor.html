@@ -81,7 +81,7 @@ AdminHaus - Panel administrativo
                 <!-- INQUILINOS -->
                 <li class="mb-2">
                     <a
-                        href="#"
+                        href="{{ url_for('inquilinos.inquilinos') }}"
                         class="
                             d-block
                             ah-text-white
@@ -89,6 +89,9 @@ AdminHaus - Panel administrativo
                             rounded
                             px-3
                             py-2
+                            {% if request.endpoint in ['inquilinos.inquilinos', 'inquilinos.nuevo_inquilino'] %}
+                                ah-bg-primary-hover
+                            {% endif %}
                         "
                     >
                         Inquilinos
@@ -118,7 +121,7 @@ AdminHaus - Panel administrativo
                 <!-- CONTRATOS -->
                 <li class="mb-2">
                     <a
-                        href="#"
+                        href="{{ url_for('contratos.contratos') }}"
                         class="
                             d-block
                             ah-text-white
@@ -126,6 +129,9 @@ AdminHaus - Panel administrativo
                             rounded
                             px-3
                             py-2
+                            {% if request.endpoint in ['contratos.contratos', 'contratos.nuevo_contrato', 'contratos.ver_contrato', 'contratos.editar_contrato'] %}
+                                ah-bg-primary-hover
+                            {% endif %}
                         "
                     >
                         Contratos
@@ -152,7 +158,7 @@ AdminHaus - Panel administrativo
                 <!-- MANTENIMIENTOS -->
                 <li class="mb-2">
                     <a
-                        href="#"
+                        href="{{ url_for('mantenimientos.mantenimientos') }}"
                         class="
                             d-block
                             ah-text-white
@@ -160,6 +166,9 @@ AdminHaus - Panel administrativo
                             rounded
                             px-3
                             py-2
+                            {% if request.endpoint in ['mantenimientos.mantenimientos', 'mantenimientos.nueva_solicitud', 'mantenimientos.ver_mantenimiento', 'mantenimientos.editar_mantenimiento'] %}
+                                ah-bg-primary-hover
+                            {% endif %}
                         "
                     >
                         Mantenimientos

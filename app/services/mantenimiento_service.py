@@ -3,10 +3,15 @@ from sqlalchemy import text
 from app import db
 
 
-def obtener_mantenimientos(buscar="", estado="todos"):
+def obtener_mantenimientos(buscar="", estado="todos", usuario_id_propietario=None):
     """
     Obtiene las solicitudes de mantenimiento junto con el código
     de la propiedad y el nombre del proveedor (si tiene uno).
+
+    Si 'usuario_id_propietario' viene con un valor, solo se
+    devuelven los mantenimientos de las propiedades que pertenecen
+    a ese usuario (rol PROPIETARIO). Si es None (admin o, por ahora,
+    gestor), no se filtra.
     """
 
     patron = f"%{buscar}%"
@@ -36,6 +41,8 @@ def obtener_mantenimientos(buscar="", estado="todos"):
                 ON mantenimiento.propiedad_id = propiedad.id
             LEFT JOIN proveedor_mantenimiento
                 ON mantenimiento.proveedor_id = proveedor_mantenimiento.id
+            LEFT JOIN propietario
+                ON propiedad.propietario_id = propietario.id
             WHERE (
                 :buscar = ''
                 OR propiedad.codigo ILIKE :patron
@@ -45,12 +52,17 @@ def obtener_mantenimientos(buscar="", estado="todos"):
                 CAST(:estado_bd AS text) IS NULL
                 OR mantenimiento.estado = CAST(:estado_bd AS text)
             )
+            AND (
+                CAST(:usuario_id_propietario AS integer) IS NULL
+                OR propietario.usuario_id = CAST(:usuario_id_propietario AS integer)
+            )
             ORDER BY mantenimiento.fecha_solicitud DESC, mantenimiento.id DESC
         """),
         {
             "buscar": buscar,
             "patron": patron,
             "estado_bd": estado_bd,
+            "usuario_id_propietario": usuario_id_propietario,
         }
     ).mappings().all()
 
@@ -69,6 +81,32 @@ def obtener_mantenimientos(buscar="", estado="todos"):
         })
 
     return filas_resultado
+
+
+def propietario_tiene_acceso_mantenimiento(mantenimiento_id, usuario_id_propietario):
+    """
+    Verifica si la propiedad de este mantenimiento pertenece al
+    propietario logueado (usuario.id). Se usa para bloquear el
+    acceso directo por URL a /mantenimientos/<id> y su edición.
+    """
+
+    resultado = db.session.execute(
+        text("""
+            SELECT 1
+            FROM mantenimiento
+            INNER JOIN propiedad ON mantenimiento.propiedad_id = propiedad.id
+            INNER JOIN propietario ON propiedad.propietario_id = propietario.id
+            WHERE mantenimiento.id = :mantenimiento_id
+              AND propietario.usuario_id = :usuario_id_propietario
+            LIMIT 1
+        """),
+        {
+            "mantenimiento_id": mantenimiento_id,
+            "usuario_id_propietario": usuario_id_propietario,
+        }
+    ).scalar_one_or_none()
+
+    return resultado is not None
 
 
 def obtener_propiedades_para_select():

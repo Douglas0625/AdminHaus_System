@@ -1,4 +1,6 @@
-{% extends "bases/base_admin.html" %}
+{% extends "bases/base_admin.html" if session.get('rol') == 'ADMINISTRADOR'
+   else "bases/base_gestor.html" if session.get('rol') == 'GESTOR'
+   else "bases/base_propietario.html" %}
 
 {% block title %}
 Mantenimientos - AdminHaus
@@ -24,12 +26,14 @@ Mantenimientos - AdminHaus
         </p>
     </div>
 
+    {% if session.get('rol') != 'PROPIETARIO' %}
     <a
         href="{{ url_for('mantenimientos.nueva_solicitud') }}"
         class="ah-btn-primary d-inline-block"
     >
         + Nueva solicitud
     </a>
+    {% endif %}
 
 </header>
 
@@ -159,6 +163,7 @@ Mantenimientos - AdminHaus
                                 <i class="bi bi-eye"></i>
                             </a>
 
+                            {% if session.get('rol') != 'PROPIETARIO' %}
                             <a
                                 href="{{ url_for('mantenimientos.editar_mantenimiento', mantenimiento_id=fila.id) }}"
                                 class="btn bg-light"
@@ -167,6 +172,7 @@ Mantenimientos - AdminHaus
                             >
                                 <i class="bi bi-pencil"></i>
                             </a>
+                            {% endif %}
 
                         </div>
 

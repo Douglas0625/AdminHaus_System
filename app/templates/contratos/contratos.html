@@ -1,4 +1,6 @@
-{% extends "bases/base_admin.html" %}
+{% extends "bases/base_admin.html" if session.get('rol') == 'ADMINISTRADOR'
+   else "bases/base_gestor.html" if session.get('rol') == 'GESTOR'
+   else "bases/base_propietario.html" %}
 
 {% block title %}
 Contratos - AdminHaus
@@ -26,12 +28,14 @@ Contratos - AdminHaus
 
     </div>
 
+    {% if session.get('rol') != 'PROPIETARIO' %}
     <a
         href="{{ url_for('contratos.nuevo_contrato') }}"
         class="ah-btn-primary d-inline-block"
     >
         + Nuevo contrato
     </a>
+    {% endif %}
 
 </header>
 
@@ -145,7 +149,7 @@ Contratos - AdminHaus
                         {% if fila.estado == 'ACTIVO' %}
                         <span class="ah-status ah-status-success ah-status-soft text-uppercase">Vigente</span>
                         {% else %}
-                        <span class="ah-status ah-status-soft ah-status-soft text-uppercase">{{ fila.estado.capitalize() }}</span>
+                        <span class="ah-status ah-status-soft text-uppercase">{{ fila.estado.capitalize() }}</span>
                         {% endif %}
                     </td>
 
@@ -162,6 +166,7 @@ Contratos - AdminHaus
                                 <i class="bi bi-eye"></i>
                             </a>
 
+                            {% if session.get('rol') != 'PROPIETARIO' %}
                             <a
                                 href="{{ url_for('contratos.editar_contrato', contrato_id=fila.id) }}"
                                 class="btn bg-light"
@@ -170,6 +175,7 @@ Contratos - AdminHaus
                             >
                                 <i class="bi bi-pencil"></i>
                             </a>
+                            {% endif %}
 
                         </div>
 

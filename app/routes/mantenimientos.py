@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, abort
+from flask import Blueprint, render_template, request, redirect, url_for, abort, session
 
 from app.services.mantenimiento_service import (
     obtener_mantenimientos,
@@ -7,10 +7,22 @@ from app.services.mantenimiento_service import (
     actualizar_mantenimiento,
     obtener_propiedades_para_select,
     obtener_proveedores_para_select,
+    propietario_tiene_acceso_mantenimiento,
 )
 
 
 mantenimientos_bp = Blueprint("mantenimientos", __name__)
+
+
+def _usuario_id_propietario_actual():
+    """
+    Devuelve el id del usuario si es PROPIETARIO (para filtrar), o
+    None si es ADMINISTRADOR o GESTOR (sin filtro por ahora, hasta
+    que se agregue gestor_id a la tabla propiedad).
+    """
+    if session.get("rol") == "PROPIETARIO":
+        return session.get("usuario_id")
+    return None
 
 
 @mantenimientos_bp.route("/mantenimientos")
@@ -19,7 +31,11 @@ def mantenimientos():
     buscar = request.args.get("buscar", "").strip()
     estado = request.args.get("estado", "todos")
 
-    filas = obtener_mantenimientos(buscar=buscar, estado=estado)
+    filas = obtener_mantenimientos(
+        buscar=buscar,
+        estado=estado,
+        usuario_id_propietario=_usuario_id_propietario_actual(),
+    )
 
     return render_template(
         "mantenimientos.html",
@@ -44,6 +60,9 @@ def _leer_formulario():
 
 @mantenimientos_bp.route("/mantenimientos/nuevo", methods=["GET", "POST"])
 def nueva_solicitud():
+
+    if session.get("rol") == "PROPIETARIO":
+        abort(403)
 
     propiedades = obtener_propiedades_para_select()
     proveedores = obtener_proveedores_para_select()
@@ -83,6 +102,10 @@ def ver_mantenimiento(mantenimiento_id):
     if mantenimiento is None:
         abort(404)
 
+    usuario_id_propietario = _usuario_id_propietario_actual()
+    if usuario_id_propietario is not None and not propietario_tiene_acceso_mantenimiento(mantenimiento_id, usuario_id_propietario):
+        abort(403)
+
     return render_template(
         "nueva_solicitud.html",
         form=mantenimiento,
@@ -95,10 +118,17 @@ def ver_mantenimiento(mantenimiento_id):
 @mantenimientos_bp.route("/mantenimientos/<int:mantenimiento_id>/editar", methods=["GET", "POST"])
 def editar_mantenimiento(mantenimiento_id):
 
+    if session.get("rol") == "PROPIETARIO":
+        abort(403)
+
     mantenimiento = obtener_mantenimiento_por_id(mantenimiento_id)
 
     if mantenimiento is None:
         abort(404)
+
+    usuario_id_propietario = _usuario_id_propietario_actual()
+    if usuario_id_propietario is not None and not propietario_tiene_acceso_mantenimiento(mantenimiento_id, usuario_id_propietario):
+        abort(403)
 
     propiedades = obtener_propiedades_para_select()
     proveedores = obtener_proveedores_para_select()

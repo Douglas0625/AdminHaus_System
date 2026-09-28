@@ -1,9 +1,14 @@
+{% if session.get('rol') == 'ADMINISTRADOR' %}
 {% extends "bases/base_admin.html" %}
+{% elif session.get('rol') == 'GESTOR' %}
+{% extends "bases/base_gestor.html" %}
+{% else %}
+{% extends "bases/base_propietario.html" %}
+{% endif %}
 
 {% block title %}
-Inquilinos - AdminHaus
+{% if modo == 'ver' %}Detalle del inquilino{% elif modo == 'editar' %}Editar inquilino{% else %}Nuevo inquilino{% endif %} - AdminHaus
 {% endblock %}
-
 
 {% block content %}
 
