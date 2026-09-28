@@ -22,7 +22,7 @@ def contratos():
     filas = obtener_contratos(buscar=buscar, estado=estado)
 
     return render_template(
-        "contratos.html",
+        "contratos/contratos.html",
         filas=filas,
         buscar=buscar,
         estado=estado,
@@ -57,7 +57,7 @@ def nuevo_contrato():
 
         if error:
             return render_template(
-                "nuevo_contrato.html",
+                "contratos/nuevo_contrato.html",
                 form=request.form,
                 modo="nuevo",
                 error=error,
@@ -68,7 +68,7 @@ def nuevo_contrato():
         return redirect(url_for("contratos.contratos"))
 
     return render_template(
-        "nuevo_contrato.html",
+        "contratos/nuevo_contrato.html",
         form={},
         modo="nuevo",
         propiedades=propiedades,
@@ -85,7 +85,7 @@ def ver_contrato(contrato_id):
         abort(404)
 
     return render_template(
-        "nuevo_contrato.html",
+        "contratos/nuevo_contrato.html",
         form=contrato,
         modo="ver",
         propiedades=[],
@@ -129,7 +129,7 @@ def editar_contrato(contrato_id):
 
         if error:
             return render_template(
-                "nuevo_contrato.html",
+                "contratos/nuevo_contrato.html",
                 form=request.form,
                 modo="editar",
                 contrato_id=contrato_id,
@@ -141,7 +141,7 @@ def editar_contrato(contrato_id):
         return redirect(url_for("contratos.contratos"))
 
     return render_template(
-        "nuevo_contrato.html",
+        "contratos/nuevo_contrato.html",
         form=contrato,
         modo="editar",
         contrato_id=contrato_id,

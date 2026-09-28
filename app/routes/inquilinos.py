@@ -20,7 +20,7 @@ def inquilinos():
     filas = obtener_inquilinos(buscar=buscar, estado=estado)
 
     return render_template(
-        "inquilinos.html",
+        "inquilinos/inquilinos.html",
         filas=filas,
         buscar=buscar,
         estado=estado,
@@ -42,7 +42,7 @@ def nuevo_inquilino():
 
         if error:
             return render_template(
-                "nuevo_inquilino.html",
+                "inquilinos/nuevo_inquilino.html",
                 form=request.form,
                 modo="nuevo",
                 error=error,
@@ -51,7 +51,7 @@ def nuevo_inquilino():
         return redirect(url_for("inquilinos.inquilinos"))
 
     return render_template(
-        "nuevo_inquilino.html",
+        "inquilinos/nuevo_inquilino.html",
         form={},
         modo="nuevo",
     )
@@ -66,7 +66,7 @@ def ver_inquilino(inquilino_id):
         abort(404)
 
     return render_template(
-        "nuevo_inquilino.html",
+        "inquilinos/nuevo_inquilino.html",
         form=inquilino,
         modo="ver",
     )
@@ -94,7 +94,7 @@ def editar_inquilino(inquilino_id):
 
         if error:
             return render_template(
-                "nuevo_inquilino.html",
+                "inquilinos/nuevo_inquilino.html",
                 form=request.form,
                 modo="editar",
                 inquilino_id=inquilino_id,
@@ -104,7 +104,7 @@ def editar_inquilino(inquilino_id):
         return redirect(url_for("inquilinos.inquilinos"))
 
     return render_template(
-        "nuevo_inquilino.html",
+        "inquilinos/nuevo_inquilino.html",
         form=inquilino,
         modo="editar",
         inquilino_id=inquilino_id,
