@@ -1,4 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, abort, session
+
+from app.security import roles_required
+
 from app.services.contrato_service import (
     obtener_contratos,
     obtener_contrato_por_id,
@@ -13,6 +16,7 @@ contratos_bp = Blueprint("contratos", __name__)
 
 
 @contratos_bp.route("/contratos")
+@roles_required("ADMINISTRADOR", "GESTOR", "PROPIETARIO")
 def contratos():
 
     buscar = request.args.get("buscar", "").strip()
@@ -37,10 +41,8 @@ def contratos():
 
 
 @contratos_bp.route("/contratos/nuevo", methods=["GET", "POST"])
+@roles_required("ADMINISTRADOR", "GESTOR")
 def nuevo_contrato():
-
-    if session.get("rol") == "PROPIETARIO":
-        abort(403)
 
     propiedades = obtener_propiedades_para_select()
     inquilinos = obtener_inquilinos_para_select()
@@ -87,6 +89,7 @@ def nuevo_contrato():
 
 
 @contratos_bp.route("/contratos/<int:contrato_id>")
+@roles_required("ADMINISTRADOR", "GESTOR", "PROPIETARIO")
 def ver_contrato(contrato_id):
 
     contrato = obtener_contrato_por_id(contrato_id)
@@ -104,9 +107,8 @@ def ver_contrato(contrato_id):
 
 
 @contratos_bp.route("/contratos/<int:contrato_id>/editar", methods=["GET", "POST"])
+@roles_required("ADMINISTRADOR", "GESTOR")
 def editar_contrato(contrato_id):
-    if session.get("rol") == "PROPIETARIO":
-        abort(403)
 
     contrato = obtener_contrato_por_id(contrato_id)
 

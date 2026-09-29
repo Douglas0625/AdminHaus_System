@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, abort, session
 
+from app.security import roles_required
+
 from app.services.mantenimiento_service import (
     obtener_mantenimientos,
     obtener_mantenimiento_por_id,
@@ -26,6 +28,7 @@ def _usuario_id_propietario_actual():
 
 
 @mantenimientos_bp.route("/mantenimientos")
+@roles_required("ADMINISTRADOR", "GESTOR", "PROPIETARIO")
 def mantenimientos():
 
     buscar = request.args.get("buscar", "").strip()
@@ -59,10 +62,8 @@ def _leer_formulario():
 
 
 @mantenimientos_bp.route("/mantenimientos/nuevo", methods=["GET", "POST"])
+@roles_required("ADMINISTRADOR", "GESTOR")
 def nueva_solicitud():
-
-    if session.get("rol") == "PROPIETARIO":
-        abort(403)
 
     propiedades = obtener_propiedades_para_select()
     proveedores = obtener_proveedores_para_select()
@@ -95,6 +96,7 @@ def nueva_solicitud():
 
 
 @mantenimientos_bp.route("/mantenimientos/<int:mantenimiento_id>")
+@roles_required("ADMINISTRADOR", "GESTOR", "PROPIETARIO")
 def ver_mantenimiento(mantenimiento_id):
 
     mantenimiento = obtener_mantenimiento_por_id(mantenimiento_id)
@@ -116,19 +118,13 @@ def ver_mantenimiento(mantenimiento_id):
 
 
 @mantenimientos_bp.route("/mantenimientos/<int:mantenimiento_id>/editar", methods=["GET", "POST"])
+@roles_required("ADMINISTRADOR", "GESTOR")
 def editar_mantenimiento(mantenimiento_id):
-
-    if session.get("rol") == "PROPIETARIO":
-        abort(403)
 
     mantenimiento = obtener_mantenimiento_por_id(mantenimiento_id)
 
     if mantenimiento is None:
         abort(404)
-
-    usuario_id_propietario = _usuario_id_propietario_actual()
-    if usuario_id_propietario is not None and not propietario_tiene_acceso_mantenimiento(mantenimiento_id, usuario_id_propietario):
-        abort(403)
 
     propiedades = obtener_propiedades_para_select()
     proveedores = obtener_proveedores_para_select()

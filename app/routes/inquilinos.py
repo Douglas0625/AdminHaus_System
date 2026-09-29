@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, abort
 
+from app.security import roles_required
+
 from app.services.inquilino_service import (
     obtener_inquilinos,
     crear_inquilino,
@@ -12,6 +14,7 @@ inquilinos_bp = Blueprint("inquilinos", __name__)
 
 
 @inquilinos_bp.route("/inquilinos")
+@roles_required("ADMINISTRADOR", "GESTOR")
 def inquilinos():
 
     buscar = request.args.get("buscar", "").strip()
@@ -28,6 +31,7 @@ def inquilinos():
 
 
 @inquilinos_bp.route("/inquilinos/nuevo", methods=["GET", "POST"])
+@roles_required("ADMINISTRADOR", "GESTOR")
 def nuevo_inquilino():
 
     if request.method == "POST":
@@ -58,6 +62,7 @@ def nuevo_inquilino():
 
 
 @inquilinos_bp.route("/inquilinos/<int:inquilino_id>")
+@roles_required("ADMINISTRADOR", "GESTOR")
 def ver_inquilino(inquilino_id):
 
     inquilino = obtener_inquilino_por_id(inquilino_id)
@@ -73,6 +78,7 @@ def ver_inquilino(inquilino_id):
 
 
 @inquilinos_bp.route("/inquilinos/<int:inquilino_id>/editar", methods=["GET", "POST"])
+@roles_required("ADMINISTRADOR", "GESTOR")
 def editar_inquilino(inquilino_id):
 
     inquilino = obtener_inquilino_por_id(inquilino_id)
