@@ -1,0 +1,400 @@
+{% extends "bases/base_admin.html" %}
+
+{% block title %}
+{% if modo == "detalle" %}Detalle de usuario - AdminHaus
+{% elif modo == "editar" %}Editar usuario - AdminHaus
+{% else %}Nuevo usuario - AdminHaus
+{% endif %}
+{% endblock %}
+
+{% set es_admin_bloqueado = usuario and usuario.rol == 'ADMINISTRADOR' %}
+{% set tiene_propietario = usuario and usuario.propietario %}
+
+{% block content %}
+
+{% with mensajes = get_flashed_messages(with_categories=true) %}
+    {% if mensajes %}
+        <div class="mb-4">
+            {% for categoria, mensaje in mensajes %}
+                <div class="ah-alert-{{ categoria }}">{{ mensaje }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<header class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+
+    <div>
+        <h1 class="ah-text-grande mb-0">
+            {% if modo == "detalle" %}Detalle de usuario
+            {% elif modo == "editar" %}Editar usuario
+            {% else %}Nuevo usuario
+            {% endif %}
+        </h1>
+
+        <p class="ah-text-subtitulos ah-text-secondary mb-0">
+            {% if modo == "detalle" %}Consulta la información del usuario y su acceso al sistema.
+            {% elif modo == "editar" %}Actualiza la información del usuario.
+            {% else %}Registra un nuevo usuario y define su acceso al sistema.
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="d-flex gap-2">
+
+        <a href="{{ url_for('usuarios.lista') }}" class="ah-btn-secondary d-inline-block">
+            {% if modo == "detalle" %}Volver{% else %}Cancelar{% endif %}
+        </a>
+
+        {% if modo == "detalle" %}
+            <a href="{{ url_for('usuarios.editar', usuario_id=usuario.id) }}" class="ah-btn-primary d-inline-block">
+                <i class="bi bi-pencil me-1"></i> Editar usuario
+            </a>
+        {% else %}
+            <button type="submit" form="form-usuario" class="ah-btn-primary">
+                {% if modo == "editar" %}Guardar cambios{% else %}Guardar usuario{% endif %}
+            </button>
+        {% endif %}
+
+    </div>
+
+</header>
+
+
+{% if modo == "detalle" %}
+
+<!-- =========================================
+     MODO DETALLE
+     ========================================= -->
+
+<section class="ah-card p-4 mb-4">
+
+    <h2 class="ah-text-titulos-2 mb-4">Información de la cuenta</h2>
+
+    <div class="row g-4">
+
+        <div class="col-12 col-md-6">
+            <label class="ah-form-label">Nombre de usuario</label>
+            <p class="ah-text-regular mb-0">{{ usuario.username }}</p>
+        </div>
+
+        <div class="col-12 col-md-3">
+            <label class="ah-form-label">Rol</label>
+            <p class="mb-0">
+                <span class="ah-status {% if usuario.rol == 'GESTOR' %}ah-status-success{% else %}ah-status-info{% endif %} text-uppercase">
+                    {{ usuario.rol }}
+                </span>
+            </p>
+        </div>
+
+        <div class="col-12 col-md-3">
+            <label class="ah-form-label">Estado</label>
+            <p class="mb-0">
+                {% if usuario.activo %}
+                    <span class="ah-status ah-status-success text-uppercase">Activo</span>
+                {% else %}
+                    <span class="ah-status ah-status-soft text-uppercase">Inactivo</span>
+                {% endif %}
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+{% if usuario.propietario %}
+<section class="ah-card p-4">
+
+    <h2 class="ah-text-titulos-2 mb-4">Datos del propietario</h2>
+
+    <div class="row g-4">
+
+        <div class="col-12 col-md-6">
+            <label class="ah-form-label">Nombre completo</label>
+            <p class="ah-text-regular mb-0">{{ usuario.propietario.nombre }} {{ usuario.propietario.apellido }}</p>
+        </div>
+
+        <div class="col-12 col-md-3">
+            <label class="ah-form-label">DUI</label>
+            <p class="ah-text-regular mb-0">{{ usuario.propietario.dui }}</p>
+        </div>
+
+        <div class="col-12 col-md-3">
+            <label class="ah-form-label">Teléfono</label>
+            <p class="ah-text-regular mb-0">{{ usuario.propietario.telefono or 'No registrado' }}</p>
+        </div>
+
+        <div class="col-12">
+            <label class="ah-form-label">Correo electrónico</label>
+            <p class="ah-text-regular mb-0">{{ usuario.propietario.correo or 'No registrado' }}</p>
+        </div>
+
+    </div>
+
+</section>
+{% endif %}
+
+
+{% else %}
+
+<!-- =========================================
+     MODO CREAR / EDITAR
+     ========================================= -->
+
+<form
+    id="form-usuario"
+    method="POST"
+    action="{% if modo == 'editar' %}{{ url_for('usuarios.editar', usuario_id=usuario.id) }}{% else %}{{ url_for('usuarios.nuevo') }}{% endif %}"
+>
+
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <section class="ah-card p-4">
+
+        <div class="row g-4">
+
+            <div class="col-12">
+                <label for="usuario" class="ah-form-label">Nombre de usuario *</label>
+                <input
+                    type="text"
+                    id="usuario"
+                    name="usuario"
+                    class="ah-form-control"
+                    placeholder="Ingresa el nombre de usuario..."
+                    autocomplete="off"
+                    value="{{ form.get('usuario', '') if form else (usuario.username if usuario else '') }}"
+                    required
+                >
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="contrasena" class="ah-form-label">
+                    {% if modo == "editar" %}Nueva contraseña{% else %}Contraseña *{% endif %}
+                </label>
+                <input
+                    type="password"
+                    id="contrasena"
+                    name="contrasena"
+                    class="ah-form-control"
+                    placeholder="{% if modo == 'editar' %}Dejar vacío para conservar la actual{% else %}••••••••{% endif %}"
+                    autocomplete="new-password"
+                    {% if modo != "editar" %}required{% endif %}
+                >
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="confirmar_contrasena" class="ah-form-label">
+                    {% if modo == "editar" %}Confirmar nueva contraseña{% else %}Confirmar contraseña *{% endif %}
+                </label>
+                <input
+                    type="password"
+                    id="confirmar_contrasena"
+                    name="confirmar_contrasena"
+                    class="ah-form-control"
+                    placeholder="••••••••"
+                    autocomplete="new-password"
+                    {% if modo != "editar" %}required{% endif %}
+                >
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="rol" class="ah-form-label">Rol *</label>
+
+                {% if es_admin_bloqueado %}
+                    <select class="ah-form-select" disabled>
+                        <option selected>Administrador</option>
+                    </select>
+                    <input type="hidden" name="rol" value="ADMINISTRADOR">
+                    <p class="ah-text-peque ah-text-secondary mt-2 mb-0">
+                        El rol de una cuenta Administrador no se puede cambiar desde aquí.
+                    </p>
+                {% else %}
+                    {% set valor_rol = form.get('rol', '') if form else (usuario.rol if usuario else '') %}
+                    <select id="rol" name="rol" class="ah-form-select" required>
+                        <option value="" {% if not valor_rol %}selected{% endif %} disabled>Seleccionar rol...</option>
+                        <option value="GESTOR" {% if valor_rol == 'GESTOR' %}selected{% endif %}>Gestor</option>
+                        <option value="PROPIETARIO" {% if valor_rol == 'PROPIETARIO' %}selected{% endif %}>Propietario</option>
+                    </select>
+                {% endif %}
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label for="estado" class="ah-form-label">Estado *</label>
+                {% set valor_estado = form.get('estado', '') if form else ('activo' if (usuario is none or usuario.activo) else 'inactivo') %}
+                <select id="estado" name="estado" class="ah-form-select" required>
+                    <option value="activo" {% if valor_estado == 'activo' %}selected{% endif %}>Activo</option>
+                    <option value="inactivo" {% if valor_estado == 'inactivo' %}selected{% endif %}>Inactivo</option>
+                </select>
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             BLOQUE PROPIETARIO (visible solo si Rol = Propietario)
+             ========================================= -->
+
+        <div id="bloque-propietario" class="mt-4 pt-4" style="border-top: 1px solid var(--border); display: none;">
+
+            <h2 class="ah-text-titulos-2 mb-3">Datos del propietario</h2>
+
+            {% if tiene_propietario %}
+
+                <!-- Ya está vinculado: se edita directamente -->
+                <div class="row g-4">
+
+                    <div class="col-12 col-md-6">
+                        <label for="propietario_nombre" class="ah-form-label">Nombre *</label>
+                        <input type="text" id="propietario_nombre" name="propietario_nombre" class="ah-form-control"
+                            value="{{ form.get('propietario_nombre', '') if form else usuario.propietario.nombre }}">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label for="propietario_apellido" class="ah-form-label">Apellido *</label>
+                        <input type="text" id="propietario_apellido" name="propietario_apellido" class="ah-form-control"
+                            value="{{ form.get('propietario_apellido', '') if form else usuario.propietario.apellido }}">
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label for="propietario_dui" class="ah-form-label">DUI *</label>
+                        <input type="text" id="propietario_dui" name="propietario_dui" class="ah-form-control"
+                            value="{{ form.get('propietario_dui', '') if form else usuario.propietario.dui }}">
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label for="propietario_telefono" class="ah-form-label">Teléfono</label>
+                        <input type="text" id="propietario_telefono" name="propietario_telefono" class="ah-form-control"
+                            value="{{ form.get('propietario_telefono', '') if form else (usuario.propietario.telefono or '') }}">
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label for="propietario_correo" class="ah-form-label">Correo</label>
+                        <input type="email" id="propietario_correo" name="propietario_correo" class="ah-form-control"
+                            value="{{ form.get('propietario_correo', '') if form else (usuario.propietario.correo or '') }}">
+                    </div>
+
+                </div>
+
+            {% else %}
+
+                <!-- Sin propietario vinculado todavía: elegir existente o crear nuevo -->
+                {% set modo_prop = form.get('propietario_modo', 'existente') if form else 'existente' %}
+
+                <div class="d-flex gap-4 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="propietario_modo" id="modo-existente"
+                            value="existente" {% if modo_prop == 'existente' %}checked{% endif %}>
+                        <label class="form-check-label ah-text-regular" for="modo-existente">
+                            Vincular propietario existente
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="propietario_modo" id="modo-nuevo"
+                            value="nuevo" {% if modo_prop == 'nuevo' %}checked{% endif %}>
+                        <label class="form-check-label ah-text-regular" for="modo-nuevo">
+                            Crear nuevo propietario
+                        </label>
+                    </div>
+                </div>
+
+                <div id="propietario-existente" class="row g-4">
+                    <div class="col-12 col-md-6">
+                        <label for="propietario_id" class="ah-form-label">Propietario asociado</label>
+                        <select id="propietario_id" name="propietario_id" class="ah-form-select">
+                            <option value="">Seleccionar propietario...</option>
+                            {% set valor_propietario_id = form.get('propietario_id', '') if form else '' %}
+                            {% for p in propietarios_disponibles %}
+                            <option value="{{ p.id }}" {% if valor_propietario_id|string == p.id|string %}selected{% endif %}>
+                                {{ p.nombre }} {{ p.apellido }} ({{ p.dui }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-6 d-flex align-items-end">
+                        <div class="ah-bg-background rounded p-3 mb-0">
+                            <p class="ah-text-peque ah-text-secondary mb-0">
+                                Solo se listan propietarios que aún no tienen cuenta de usuario.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="propietario-nuevo" class="row g-4" style="display: none;">
+                    <div class="col-12 col-md-6">
+                        <label for="propietario_nombre" class="ah-form-label">Nombre *</label>
+                        <input type="text" id="propietario_nombre" name="propietario_nombre" class="ah-form-control"
+                            value="{{ form.get('propietario_nombre', '') if form else '' }}">
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="propietario_apellido" class="ah-form-label">Apellido *</label>
+                        <input type="text" id="propietario_apellido" name="propietario_apellido" class="ah-form-control"
+                            value="{{ form.get('propietario_apellido', '') if form else '' }}">
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label for="propietario_dui" class="ah-form-label">DUI *</label>
+                        <input type="text" id="propietario_dui" name="propietario_dui" class="ah-form-control"
+                            value="{{ form.get('propietario_dui', '') if form else '' }}">
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label for="propietario_telefono" class="ah-form-label">Teléfono</label>
+                        <input type="text" id="propietario_telefono" name="propietario_telefono" class="ah-form-control"
+                            value="{{ form.get('propietario_telefono', '') if form else '' }}">
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label for="propietario_correo" class="ah-form-label">Correo</label>
+                        <input type="email" id="propietario_correo" name="propietario_correo" class="ah-form-control"
+                            value="{{ form.get('propietario_correo', '') if form else '' }}">
+                    </div>
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+</form>
+
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+{% if modo != "detalle" and not es_admin_bloqueado %}
+<script>
+    // Muestra el bloque de Propietario solo cuando el rol
+    // seleccionado es PROPIETARIO, y alterna entre "vincular
+    // existente" / "crear nuevo" dentro de ese bloque.
+    (function () {
+        var selectRol = document.getElementById('rol');
+        var bloque = document.getElementById('bloque-propietario');
+        var radios = document.querySelectorAll('input[name="propietario_modo"]');
+        var seccionExistente = document.getElementById('propietario-existente');
+        var seccionNueva = document.getElementById('propietario-nuevo');
+
+        function actualizarBloque() {
+            if (!selectRol || !bloque) return;
+            bloque.style.display = (selectRol.value === 'PROPIETARIO') ? 'block' : 'none';
+        }
+
+        function actualizarSubmodo() {
+            if (!radios.length) return;
+            var seleccionado = document.querySelector('input[name="propietario_modo"]:checked');
+            var esNuevo = seleccionado && seleccionado.value === 'nuevo';
+            if (seccionExistente) seccionExistente.style.display = esNuevo ? 'none' : 'flex';
+            if (seccionNueva) seccionNueva.style.display = esNuevo ? 'flex' : 'none';
+        }
+
+        if (selectRol) {
+            selectRol.addEventListener('change', actualizarBloque);
+            actualizarBloque();
+        }
+
+        radios.forEach(function (radio) {
+            radio.addEventListener('change', actualizarSubmodo);
+        });
+        actualizarSubmodo();
+    })();
+</script>
+{% endif %}
+{% endblock %}

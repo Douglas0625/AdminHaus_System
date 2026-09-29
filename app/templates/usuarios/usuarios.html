@@ -1,0 +1,225 @@
+{% extends "bases/base_admin.html" %}
+
+{% block title %}Usuarios - AdminHaus{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid p-0">
+
+    <!-- Encabezado -->
+    <header class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+
+        <div>
+            <h1 class="ah-text-grande mb-0">Usuarios</h1>
+
+            <p class="ah-text-subtitulos ah-text-secondary mb-0">
+                Gestiona los usuarios que tienen acceso al sistema AdminHaus.
+            </p>
+        </div>
+
+        <a
+            href="{{ url_for('usuarios.nuevo') }}"
+            class="ah-btn-primary d-inline-flex align-items-center gap-2 text-decoration-none"
+        >
+            <i class="bi bi-plus-lg"></i>
+            Nuevo usuario
+        </a>
+
+    </header>
+
+
+    <!-- Mensajes -->
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+        {% if mensajes %}
+            <div class="mb-4">
+                {% for categoria, mensaje in mensajes %}
+                    <div class="ah-alert-{{ categoria }} mb-2">{{ mensaje }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+
+    <!-- Buscador y filtros -->
+    <form
+        method="GET"
+        action="{{ url_for('usuarios.lista') }}"
+        class="row g-2 mb-3 align-items-center"
+    >
+
+        <div class="col-12 col-md-6">
+            <div class="ah-search">
+                <i class="bi bi-search ah-search-icon"></i>
+                <input
+                    type="search"
+                    name="buscar"
+                    class="ah-form-control"
+                    placeholder="Buscar por usuario"
+                    value="{{ buscar }}"
+                    aria-label="Buscar usuarios"
+                >
+            </div>
+        </div>
+
+        <div class="col-6 col-md-2">
+            <select
+                name="rol"
+                class="ah-form-select"
+                aria-label="Filtrar por rol"
+                onchange="this.form.submit()"
+            >
+                <option value="todos" {% if rol == 'todos' %}selected{% endif %}>Rol: Todos</option>
+                <option value="ADMINISTRADOR" {% if rol == 'ADMINISTRADOR' %}selected{% endif %}>Administrador</option>
+                <option value="GESTOR" {% if rol == 'GESTOR' %}selected{% endif %}>Gestor</option>
+                <option value="PROPIETARIO" {% if rol == 'PROPIETARIO' %}selected{% endif %}>Propietario</option>
+            </select>
+        </div>
+
+        <div class="col-6 col-md-2">
+            <select
+                name="estado"
+                class="ah-form-select"
+                aria-label="Filtrar por estado"
+                onchange="this.form.submit()"
+            >
+                <option value="todos" {% if estado == 'todos' %}selected{% endif %}>Estado: Todos</option>
+                <option value="activo" {% if estado == 'activo' %}selected{% endif %}>Activo</option>
+                <option value="inactivo" {% if estado == 'inactivo' %}selected{% endif %}>Inactivo</option>
+            </select>
+        </div>
+
+        <div class="col-12 col-md-2 text-md-end">
+            <a
+                href="{{ url_for('usuarios.lista') }}"
+                class="ah-text-regular-negrita text-decoration-none"
+            >
+                Limpiar filtros
+            </a>
+        </div>
+
+    </form>
+
+
+    <!-- Tabla de usuarios -->
+    <div class="ah-table-container">
+
+        <table class="ah-table mb-0">
+
+            <thead>
+                <tr>
+                    <th scope="col">Usuario</th>
+                    <th scope="col">Rol</th>
+                    <th scope="col">Propietario asociado</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col" class="text-center">Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for usuario in usuarios %}
+
+                    <tr>
+
+                        <!-- Usuario -->
+                        <td>
+                            <a
+                                href="{{ url_for('usuarios.detalle', usuario_id=usuario.id) }}"
+                                class="ah-text-regular-negrita text-decoration-none"
+                            >
+                                {{ usuario.username }}
+                            </a>
+                        </td>
+
+                        <!-- Rol -->
+                        <td>
+                            {% if usuario.rol == 'GESTOR' %}
+                                <span class="ah-status ah-status-success text-uppercase">{{ usuario.rol }}</span>
+                            {% else %}
+                                <span class="ah-status ah-status-info text-uppercase">{{ usuario.rol }}</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Propietario asociado -->
+                        <td>
+                            <span class="ah-text-regular ah-text-secondary">
+                                {% if usuario.propietario %}
+                                    {{ usuario.propietario.nombre }} {{ usuario.propietario.apellido }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </span>
+                        </td>
+
+                        <!-- Estado -->
+                        <td>
+                            {% if usuario.activo %}
+                                <span class="ah-status ah-status-success text-uppercase">Activo</span>
+                            {% else %}
+                                <span class="ah-status ah-status-soft text-uppercase">Inactivo</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Acciones -->
+                        <td>
+                            <div class="d-flex justify-content-center align-items-center gap-2">
+
+                                {% set es_uno_mismo = (session.get('usuario_id')|string) == (usuario.id|string) %}
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('usuarios.cambiar_estado', usuario_id=usuario.id) }}"
+                                    class="d-inline"
+                                >
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-light ah-text-secondary d-inline-flex align-items-center justify-content-center"
+                                        title="{% if es_uno_mismo %}No puedes bloquear tu propia cuenta{% elif usuario.activo %}Bloquear usuario{% else %}Desbloquear usuario{% endif %}"
+                                        aria-label="Cambiar estado"
+                                        {% if es_uno_mismo %}disabled{% endif %}
+                                    >
+                                        <i class="bi bi-power"></i>
+                                    </button>
+                                </form>
+
+                                <a
+                                    href="{{ url_for('usuarios.editar', usuario_id=usuario.id) }}"
+                                    class="btn btn-light ah-text-secondary d-inline-flex align-items-center justify-content-center"
+                                    title="Editar usuario"
+                                    aria-label="Editar usuario"
+                                >
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+
+                            </div>
+                        </td>
+
+                    </tr>
+
+                {% else %}
+
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <p class="ah-text-regular ah-text-secondary mb-0">
+                                {% if buscar %}
+                                    No se encontraron usuarios que coincidan con la búsqueda.
+                                {% else %}
+                                    Todavía no hay usuarios registrados.
+                                {% endif %}
+                            </p>
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
