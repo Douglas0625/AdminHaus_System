@@ -255,7 +255,7 @@ AdminHaus - Panel administrativo
             <ul class="list-unstyled mt-3 mb-0">
                 <li>
                     <a
-                        href="#"
+                        href="{{ url_for('usuarios.lista') }}"
                         class="
                             d-block
                             ah-text-white
@@ -263,6 +263,9 @@ AdminHaus - Panel administrativo
                             rounded
                             px-3
                             py-2
+                            {% if request.endpoint in ['usuarios.lista', 'usuarios.detalle', 'usuarios.nuevo', 'usuarios.editar'] %}
+                                ah-bg-primary-hover
+                            {% endif %}
                         "
                     >
                         Usuarios
